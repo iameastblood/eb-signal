@@ -1,0 +1,863 @@
+[
+ {
+  "slug": "anthropic-symbol",
+  "name": "Anthropic (işaret)",
+  "brand": "anthropic",
+  "kind": "symbol",
+  "src": "lobe:anthropic"
+ },
+ {
+  "slug": "claude-code",
+  "name": "Claude Code",
+  "brand": "anthropic",
+  "kind": "product",
+  "src": "lobe:claudecode"
+ },
+ {
+  "slug": "codex",
+  "name": "Codex",
+  "brand": "openai",
+  "kind": "product",
+  "src": "lobe:codex"
+ },
+ {
+  "slug": "sora",
+  "name": "Sora",
+  "brand": "openai",
+  "kind": "product",
+  "src": "lobe:sora"
+ },
+ {
+  "slug": "dall-e",
+  "name": "DALL·E",
+  "brand": "openai",
+  "kind": "product",
+  "src": "lobe:dalle"
+ },
+ {
+  "slug": "google",
+  "name": "Google",
+  "brand": "google",
+  "kind": "wordmark",
+  "src": "lobe:google"
+ },
+ {
+  "slug": "google-deepmind",
+  "name": "Google DeepMind",
+  "brand": "google",
+  "kind": "wordmark",
+  "src": "lobe:deepmind"
+ },
+ {
+  "slug": "gemini",
+  "name": "Gemini",
+  "brand": "google",
+  "kind": "symbol",
+  "src": "url:https://www.gstatic.com/lamda/images/gemini_sparkle_v002_d4735304ff6292a690345.svg"
+ },
+ {
+  "slug": "gemini-cli",
+  "name": "Gemini CLI",
+  "brand": "google",
+  "kind": "product",
+  "src": "lobe:geminicli"
+ },
+ {
+  "slug": "gemma",
+  "name": "Gemma",
+  "brand": "google",
+  "kind": "product",
+  "src": "lobe:gemma"
+ },
+ {
+  "slug": "notebooklm",
+  "name": "NotebookLM",
+  "brand": "google",
+  "kind": "product",
+  "src": "lobe:notebooklm"
+ },
+ {
+  "slug": "antigravity",
+  "name": "Antigravity",
+  "brand": "google",
+  "kind": "product",
+  "src": "lobe:antigravity"
+ },
+ {
+  "slug": "nano-banana",
+  "name": "Nano Banana",
+  "brand": "google",
+  "kind": "product",
+  "src": "lobe:nanobanana"
+ },
+ {
+  "slug": "google-cloud",
+  "name": "Google Cloud",
+  "brand": "google",
+  "kind": "wordmark",
+  "src": "lobe:googlecloud"
+ },
+ {
+  "slug": "google-ai-studio",
+  "name": "Google AI Studio",
+  "brand": "google",
+  "kind": "product",
+  "src": "lobe:aistudio"
+ },
+ {
+  "slug": "meta-ai",
+  "name": "Meta AI",
+  "brand": "meta",
+  "kind": "product",
+  "src": "lobe:metaai"
+ },
+ {
+  "slug": "grok",
+  "name": "Grok",
+  "brand": "xai",
+  "kind": "symbol",
+  "src": "lobe:grok"
+ },
+ {
+  "slug": "copilot",
+  "name": "Microsoft Copilot",
+  "brand": "microsoft",
+  "kind": "product",
+  "src": "lobe:copilot"
+ },
+ {
+  "slug": "github",
+  "name": "GitHub",
+  "brand": "microsoft",
+  "kind": "wordmark",
+  "src": "lobe:github"
+ },
+ {
+  "slug": "github-copilot",
+  "name": "GitHub Copilot",
+  "brand": "microsoft",
+  "kind": "product",
+  "src": "lobe:githubcopilot"
+ },
+ {
+  "slug": "azure",
+  "name": "Azure",
+  "brand": "microsoft",
+  "kind": "wordmark",
+  "src": "lobe:azure"
+ },
+ {
+  "slug": "azure-ai",
+  "name": "Azure AI",
+  "brand": "microsoft",
+  "kind": "product",
+  "src": "lobe:azureai"
+ },
+ {
+  "slug": "samsung",
+  "name": "Samsung",
+  "brand": "samsung",
+  "kind": "wordmark",
+  "src": "url:https://commons.wikimedia.org/wiki/Special:FilePath/Samsung%20wordmark.svg"
+ },
+ {
+  "slug": "alibaba",
+  "name": "Alibaba",
+  "brand": "alibaba",
+  "kind": "wordmark",
+  "src": "lobe:alibaba"
+ },
+ {
+  "slug": "moonshot",
+  "name": "Moonshot AI",
+  "brand": "moonshot",
+  "kind": "wordmark",
+  "src": "lobe:moonshot"
+ },
+ {
+  "slug": "kimi",
+  "name": "Kimi",
+  "brand": "moonshot",
+  "kind": "symbol",
+  "src": "lobe:kimi"
+ },
+ {
+  "slug": "chatglm",
+  "name": "GLM (Zhipu)",
+  "brand": "zhipu",
+  "kind": "product",
+  "src": "lobe:chatglm"
+ },
+ {
+  "slug": "minimax",
+  "name": "MiniMax",
+  "brand": "minimax",
+  "kind": "symbol",
+  "src": "lobe:minimax"
+ },
+ {
+  "slug": "hailuo",
+  "name": "Hailuo AI",
+  "brand": "minimax",
+  "kind": "product",
+  "src": "lobe:hailuo"
+ },
+ {
+  "slug": "bytedance",
+  "name": "ByteDance",
+  "brand": "bytedance",
+  "kind": "wordmark",
+  "src": "lobe:bytedance"
+ },
+ {
+  "slug": "doubao",
+  "name": "Doubao",
+  "brand": "bytedance",
+  "kind": "product",
+  "src": "lobe:doubao"
+ },
+ {
+  "slug": "trae",
+  "name": "Trae",
+  "brand": "bytedance",
+  "kind": "product",
+  "src": "lobe:trae"
+ },
+ {
+  "slug": "jimeng",
+  "name": "Jimeng",
+  "brand": "bytedance",
+  "kind": "product",
+  "src": "lobe:jimeng"
+ },
+ {
+  "slug": "baidu",
+  "name": "Baidu",
+  "brand": "baidu",
+  "kind": "wordmark",
+  "src": "lobe:baidu"
+ },
+ {
+  "slug": "ernie",
+  "name": "ERNIE",
+  "brand": "baidu",
+  "kind": "product",
+  "src": "lobe:wenxin"
+ },
+ {
+  "slug": "tencent",
+  "name": "Tencent",
+  "brand": "tencent",
+  "kind": "wordmark",
+  "src": "lobe:tencent"
+ },
+ {
+  "slug": "hunyuan",
+  "name": "Hunyuan",
+  "brand": "tencent",
+  "kind": "product",
+  "src": "lobe:hunyuan"
+ },
+ {
+  "slug": "bedrock",
+  "name": "Amazon Bedrock",
+  "brand": "amazon",
+  "kind": "product",
+  "src": "lobe:bedrock"
+ },
+ {
+  "slug": "nova",
+  "name": "Amazon Nova",
+  "brand": "amazon",
+  "kind": "product",
+  "src": "lobe:nova"
+ },
+ {
+  "slug": "cohere",
+  "name": "Cohere",
+  "brand": "cohere",
+  "kind": "wordmark",
+  "src": "lobe:cohere"
+ },
+ {
+  "slug": "commanda",
+  "name": "Command A",
+  "brand": "cohere",
+  "kind": "product",
+  "src": "lobe:commanda"
+ },
+ {
+  "slug": "stability",
+  "name": "Stability AI",
+  "brand": "stability",
+  "kind": "wordmark",
+  "src": "lobe:stability"
+ },
+ {
+  "slug": "midjourney",
+  "name": "Midjourney",
+  "brand": "midjourney",
+  "kind": "wordmark",
+  "src": "lobe:midjourney"
+ },
+ {
+  "slug": "runway",
+  "name": "Runway",
+  "brand": "runway",
+  "kind": "wordmark",
+  "src": "lobe:runway"
+ },
+ {
+  "slug": "luma",
+  "name": "Luma AI",
+  "brand": "luma",
+  "kind": "wordmark",
+  "src": "lobe:luma"
+ },
+ {
+  "slug": "pika",
+  "name": "Pika",
+  "brand": "pika",
+  "kind": "wordmark",
+  "src": "lobe:pika"
+ },
+ {
+  "slug": "kling",
+  "name": "Kling",
+  "brand": "kling",
+  "kind": "wordmark",
+  "src": "lobe:kling"
+ },
+ {
+  "slug": "vidu",
+  "name": "Vidu",
+  "brand": "vidu",
+  "kind": "wordmark",
+  "src": "lobe:vidu"
+ },
+ {
+  "slug": "flux",
+  "name": "FLUX",
+  "brand": "bfl",
+  "kind": "product",
+  "src": "lobe:flux"
+ },
+ {
+  "slug": "bfl",
+  "name": "Black Forest Labs",
+  "brand": "bfl",
+  "kind": "wordmark",
+  "src": "lobe:bfl"
+ },
+ {
+  "slug": "ideogram",
+  "name": "Ideogram",
+  "brand": "ideogram",
+  "kind": "wordmark",
+  "src": "lobe:ideogram"
+ },
+ {
+  "slug": "recraft",
+  "name": "Recraft",
+  "brand": "recraft",
+  "kind": "wordmark",
+  "src": "lobe:recraft"
+ },
+ {
+  "slug": "krea",
+  "name": "Krea",
+  "brand": "krea",
+  "kind": "wordmark",
+  "src": "lobe:krea"
+ },
+ {
+  "slug": "elevenlabs",
+  "name": "ElevenLabs",
+  "brand": "elevenlabs",
+  "kind": "wordmark",
+  "src": "lobe:elevenlabs"
+ },
+ {
+  "slug": "suno",
+  "name": "Suno",
+  "brand": "suno",
+  "kind": "wordmark",
+  "src": "lobe:suno"
+ },
+ {
+  "slug": "udio",
+  "name": "Udio",
+  "brand": "udio",
+  "kind": "wordmark",
+  "src": "lobe:udio"
+ },
+ {
+  "slug": "groq",
+  "name": "Groq",
+  "brand": "groq",
+  "kind": "wordmark",
+  "src": "lobe:groq"
+ },
+ {
+  "slug": "cerebras",
+  "name": "Cerebras",
+  "brand": "cerebras",
+  "kind": "wordmark",
+  "src": "lobe:cerebras"
+ },
+ {
+  "slug": "sambanova",
+  "name": "SambaNova",
+  "brand": "sambanova",
+  "kind": "wordmark",
+  "src": "lobe:sambanova"
+ },
+ {
+  "slug": "together",
+  "name": "Together AI",
+  "brand": "together",
+  "kind": "wordmark",
+  "src": "lobe:together"
+ },
+ {
+  "slug": "fireworks",
+  "name": "Fireworks AI",
+  "brand": "fireworks",
+  "kind": "wordmark",
+  "src": "lobe:fireworks"
+ },
+ {
+  "slug": "replicate",
+  "name": "Replicate",
+  "brand": "replicate",
+  "kind": "wordmark",
+  "src": "lobe:replicate"
+ },
+ {
+  "slug": "openrouter",
+  "name": "OpenRouter",
+  "brand": "openrouter",
+  "kind": "wordmark",
+  "src": "lobe:openrouter"
+ },
+ {
+  "slug": "ollama",
+  "name": "Ollama",
+  "brand": "ollama",
+  "kind": "wordmark",
+  "src": "lobe:ollama"
+ },
+ {
+  "slug": "lmstudio",
+  "name": "LM Studio",
+  "brand": "lmstudio",
+  "kind": "wordmark",
+  "src": "lobe:lmstudio"
+ },
+ {
+  "slug": "vercel",
+  "name": "Vercel",
+  "brand": "vercel",
+  "kind": "wordmark",
+  "src": "lobe:vercel"
+ },
+ {
+  "slug": "cloudflare",
+  "name": "Cloudflare",
+  "brand": "cloudflare",
+  "kind": "wordmark",
+  "src": "lobe:cloudflare"
+ },
+ {
+  "slug": "snowflake",
+  "name": "Snowflake",
+  "brand": "snowflake",
+  "kind": "wordmark",
+  "src": "lobe:snowflake"
+ },
+ {
+  "slug": "ibm",
+  "name": "IBM",
+  "brand": "ibm",
+  "kind": "wordmark",
+  "src": "lobe:ibm"
+ },
+ {
+  "slug": "devin",
+  "name": "Devin",
+  "brand": "cognition",
+  "kind": "product",
+  "src": "lobe:devin"
+ },
+ {
+  "slug": "windsurf",
+  "name": "Windsurf",
+  "brand": "cognition",
+  "kind": "product",
+  "src": "lobe:windsurf"
+ },
+ {
+  "slug": "replit",
+  "name": "Replit",
+  "brand": "replit",
+  "kind": "wordmark",
+  "src": "lobe:replit"
+ },
+ {
+  "slug": "lovable",
+  "name": "Lovable",
+  "brand": "lovable",
+  "kind": "wordmark",
+  "src": "lobe:lovable"
+ },
+ {
+  "slug": "v0",
+  "name": "v0",
+  "brand": "vercel",
+  "kind": "product",
+  "src": "lobe:v0"
+ },
+ {
+  "slug": "cline",
+  "name": "Cline",
+  "brand": "cline",
+  "kind": "product",
+  "src": "lobe:cline"
+ },
+ {
+  "slug": "roo-code",
+  "name": "Roo Code",
+  "brand": "roo-code",
+  "kind": "product",
+  "src": "lobe:roocode"
+ },
+ {
+  "slug": "kilo-code",
+  "name": "Kilo Code",
+  "brand": "kilo-code",
+  "kind": "product",
+  "src": "lobe:kilocode"
+ },
+ {
+  "slug": "openhands",
+  "name": "OpenHands",
+  "brand": "openhands",
+  "kind": "product",
+  "src": "lobe:openhands"
+ },
+ {
+  "slug": "amp",
+  "name": "Amp",
+  "brand": "sourcegraph",
+  "kind": "product",
+  "src": "lobe:amp"
+ },
+ {
+  "slug": "opencode",
+  "name": "OpenCode",
+  "brand": "opencode",
+  "kind": "product",
+  "src": "lobe:opencode"
+ },
+ {
+  "slug": "junie",
+  "name": "Junie",
+  "brand": "jetbrains",
+  "kind": "product",
+  "src": "lobe:junie"
+ },
+ {
+  "slug": "kiro",
+  "name": "Kiro",
+  "brand": "aws",
+  "kind": "product",
+  "src": "lobe:kiro"
+ },
+ {
+  "slug": "goose",
+  "name": "Goose",
+  "brand": "block",
+  "kind": "product",
+  "src": "lobe:goose"
+ },
+ {
+  "slug": "manus",
+  "name": "Manus",
+  "brand": "manus",
+  "kind": "product",
+  "src": "lobe:manus"
+ },
+ {
+  "slug": "notion",
+  "name": "Notion",
+  "brand": "notion",
+  "kind": "wordmark",
+  "src": "lobe:notion"
+ },
+ {
+  "slug": "langchain",
+  "name": "LangChain",
+  "brand": "langchain",
+  "kind": "wordmark",
+  "src": "lobe:langchain"
+ },
+ {
+  "slug": "langgraph",
+  "name": "LangGraph",
+  "brand": "langchain",
+  "kind": "product",
+  "src": "lobe:langgraph"
+ },
+ {
+  "slug": "llamaindex",
+  "name": "LlamaIndex",
+  "brand": "llamaindex",
+  "kind": "wordmark",
+  "src": "lobe:llamaindex"
+ },
+ {
+  "slug": "n8n",
+  "name": "n8n",
+  "brand": "n8n",
+  "kind": "wordmark",
+  "src": "lobe:n8n"
+ },
+ {
+  "slug": "crewai",
+  "name": "CrewAI",
+  "brand": "crewai",
+  "kind": "wordmark",
+  "src": "lobe:crewai"
+ },
+ {
+  "slug": "dify",
+  "name": "Dify",
+  "brand": "dify",
+  "kind": "wordmark",
+  "src": "lobe:dify"
+ },
+ {
+  "slug": "mcp",
+  "name": "Model Context Protocol",
+  "brand": "anthropic",
+  "kind": "product",
+  "src": "lobe:mcp"
+ },
+ {
+  "slug": "gradio",
+  "name": "Gradio",
+  "brand": "gradio",
+  "kind": "wordmark",
+  "src": "lobe:gradio"
+ },
+ {
+  "slug": "comfyui",
+  "name": "ComfyUI",
+  "brand": "comfyui",
+  "kind": "product",
+  "src": "lobe:comfyui"
+ },
+ {
+  "slug": "openwebui",
+  "name": "Open WebUI",
+  "brand": "openwebui",
+  "kind": "product",
+  "src": "lobe:openwebui"
+ },
+ {
+  "slug": "sakana",
+  "name": "Sakana AI",
+  "brand": "sakana",
+  "kind": "wordmark",
+  "src": "lobe:sakana"
+ },
+ {
+  "slug": "liquid",
+  "name": "Liquid AI",
+  "brand": "liquid",
+  "kind": "wordmark",
+  "src": "lobe:liquid"
+ },
+ {
+  "slug": "ai2",
+  "name": "Ai2 (Allen Institute)",
+  "brand": "ai2",
+  "kind": "wordmark",
+  "src": "lobe:ai2"
+ },
+ {
+  "slug": "reka",
+  "name": "Reka AI",
+  "brand": "reka",
+  "kind": "wordmark",
+  "src": "lobe:reka"
+ },
+ {
+  "slug": "inflection",
+  "name": "Inflection AI",
+  "brand": "inflection",
+  "kind": "wordmark",
+  "src": "lobe:inflection"
+ },
+ {
+  "slug": "ai21",
+  "name": "AI21 Labs",
+  "brand": "ai21",
+  "kind": "wordmark",
+  "src": "lobe:ai21"
+ },
+ {
+  "slug": "aleph-alpha",
+  "name": "Aleph Alpha",
+  "brand": "alephalpha",
+  "kind": "wordmark",
+  "src": "lobe:alephalpha"
+ },
+ {
+  "slug": "stepfun",
+  "name": "StepFun",
+  "brand": "stepfun",
+  "kind": "wordmark",
+  "src": "lobe:stepfun"
+ },
+ {
+  "slug": "upstage",
+  "name": "Upstage",
+  "brand": "upstage",
+  "kind": "wordmark",
+  "src": "lobe:upstage"
+ },
+ {
+  "slug": "baichuan",
+  "name": "Baichuan",
+  "brand": "baichuan",
+  "kind": "wordmark",
+  "src": "lobe:baichuan"
+ },
+ {
+  "slug": "sensenova",
+  "name": "SenseNova",
+  "brand": "sensenova",
+  "kind": "wordmark",
+  "src": "lobe:sensenova"
+ },
+ {
+  "slug": "poolside",
+  "name": "Poolside",
+  "brand": "poolside",
+  "kind": "wordmark",
+  "src": "lobe:poolside"
+ },
+ {
+  "slug": "magic",
+  "name": "Magic",
+  "brand": "magic",
+  "kind": "wordmark",
+  "src": "lobe:magic"
+ },
+ {
+  "slug": "exa",
+  "name": "Exa",
+  "brand": "exa",
+  "kind": "wordmark",
+  "src": "lobe:exa"
+ },
+ {
+  "slug": "tavily",
+  "name": "Tavily",
+  "brand": "tavily",
+  "kind": "wordmark",
+  "src": "lobe:tavily"
+ },
+ {
+  "slug": "jina",
+  "name": "Jina AI",
+  "brand": "jina",
+  "kind": "wordmark",
+  "src": "lobe:jina"
+ },
+ {
+  "slug": "firecrawl",
+  "name": "Firecrawl",
+  "brand": "firecrawl",
+  "kind": "wordmark",
+  "src": "lobe:firecrawl"
+ },
+ {
+  "slug": "brave",
+  "name": "Brave",
+  "brand": "brave",
+  "kind": "wordmark",
+  "src": "lobe:brave"
+ },
+ {
+  "slug": "kagi",
+  "name": "Kagi",
+  "brand": "kagi",
+  "kind": "wordmark",
+  "src": "lobe:kagi"
+ },
+ {
+  "slug": "assemblyai",
+  "name": "AssemblyAI",
+  "brand": "assemblyai",
+  "kind": "wordmark",
+  "src": "lobe:assemblyai"
+ },
+ {
+  "slug": "fal",
+  "name": "fal.ai",
+  "brand": "fal",
+  "kind": "wordmark",
+  "src": "lobe:fal"
+ },
+ {
+  "slug": "novita",
+  "name": "Novita AI",
+  "brand": "novita",
+  "kind": "wordmark",
+  "src": "lobe:novita"
+ },
+ {
+  "slug": "hyperbolic",
+  "name": "Hyperbolic",
+  "brand": "hyperbolic",
+  "kind": "wordmark",
+  "src": "lobe:hyperbolic"
+ },
+ {
+  "slug": "nebius",
+  "name": "Nebius",
+  "brand": "nebius",
+  "kind": "wordmark",
+  "src": "lobe:nebius"
+ },
+ {
+  "slug": "baseten",
+  "name": "Baseten",
+  "brand": "baseten",
+  "kind": "wordmark",
+  "src": "lobe:baseten"
+ },
+ {
+  "slug": "vllm",
+  "name": "vLLM",
+  "brand": "vllm",
+  "kind": "product",
+  "src": "lobe:vllm"
+ },
+ {
+  "slug": "langfuse",
+  "name": "Langfuse",
+  "brand": "langfuse",
+  "kind": "wordmark",
+  "src": "lobe:langfuse"
+ },
+ {
+  "slug": "wandb",
+  "name": "Weights & Biases",
+  "brand": "wandb",
+  "kind": "wordmark",
+  "src": "lobe:wandb"
+ }
+]

@@ -13,6 +13,7 @@ JSON örnekleri: `examples/t1.json ... t6.json`. Kurallar ve karar ağacı: **EB
 
 ## Değişmez kurallar
 - Logo sadece `logos/` klasöründen (logos.csv). Yapay zekâ ile logo **asla** çizilmez.
+- Logo kütüphanesi: 143 logo, 94 marka, koyu zemin için `-white` sürümleri. Dizin ve yeni logo ekleme protokolü: **logos/README.md**. Üretim araçları: `tools/`.
 - Yapay zekâ sadece arka plan üretir (spec'teki tarif). Yazı, logo, şekil kodla basılır.
 - Rakam uydurulmaz. Kaynak satırı görselin içinde. `@eastblood_tr` alt ortada (render.py otomatik basar).
 - Em dash (—) yok. Başlık bir bulgu cümlesidir.
