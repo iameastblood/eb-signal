@@ -78,10 +78,21 @@ Tek logo için `tools/` zinciri yerine: `python add_logo.py --src <URL|dosya> --
 
 ## Koyu zemin notu
 
-`-white.png` sürümü, logonun alfa kanalı korunarak beyaz doldurulmasıyla üretilir. İçi dolu
-kare app ikonlarında (codex, sora, kiro, zai, gemini-cli, dall-e, nova, antigravity) silüet
-okunmadığı için beyaz sürüm **üretilmez**; bu logolar koyu zeminde renkli haliyle ya da açık
-karo içinde kullanılır.
+`-white.png` sürümü, logonun alfa kanalı korunarak beyaz doldurulmasıyla üretilir. Karar tek
+yerde verilir: `tools/make_white.py` içindeki `legible()` fonksiyonu. İçi dolu kare app
+ikonlarında silüet okunmadığı için beyaz sürüm üretilmez; bu logolar koyu zeminde renkli
+haliyle ya da açık karo içinde kullanılır.
+
+İki elle kontrol dosyası var, ikisi de `build_logos.py` ve `make_white.py` tarafından okunur:
+
+| Dosya | Anlamı |
+| --- | --- |
+| `tools/white_skip.txt` | Üst bölümdeki slug'lar için beyaz sürüm **asla** üretilmez (elle karar) |
+| `tools/white_force.txt` | Otomatik kurala rağmen beyaz sürüm üretilir (koyu çizgi logo) |
+
+`white_skip.txt` iki bölümlüdür: elle atlananlar korunur, `OTOMATİK` bölümü her koşuda
+yeniden yazılır. Beyaz sürüm istediğin bir logo otomatik bölümde görünüyorsa slug'ı
+`white_force.txt` dosyasına ekle ve `python tools/make_white.py` çalıştır.
 
 ## Marka dizini
 
