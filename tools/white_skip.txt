@@ -1,19 +1,18 @@
-# Beyaz sürümü üretilmeyen logolar (otomatik + elle)
-antigravity
+# ELLE atlananlar (bu bölüm korunur). Dolu app ikonu/maskot: beyaz silueti okunmaz, koyu zeminde renkli haliyle veya açık karoda kullanılır.
+grok-bot
+manus-cue
+sharick
+
+# OTOMATİK atlananlar (her koşuda yeniden yazılır; beyaz sürüm istiyorsan slug'ı white_force.txt'ye ekle)
 claude-duet
 codex
-dall-e
 fo
 gemini-cli
-grok-bot
-instinct
 kiro
-manus-cue
 nova
 pally
 pickle
 poke
-sharick
 sora
 town
 underdog

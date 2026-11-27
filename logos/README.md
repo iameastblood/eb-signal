@@ -196,7 +196,7 @@ karo içinde kullanılır.
 
 ### Google  ·  marka: `google`
 
-- `antigravity.png` · Antigravity (product)
+- `antigravity.png` + beyaz · Antigravity (product)
 - `gemini.png` + beyaz · Gemini (symbol)
 - `gemini-cli.png` · Gemini CLI (product)
 - `gemma.png` + beyaz · Gemma (product)
@@ -237,7 +237,7 @@ karo içinde kullanılır.
 
 ### Instinct  ·  marka: `instinct`
 
-- `instinct.png` · Instinct (product)
+- `instinct.png` + beyaz · Instinct (product)
 
 ### JetBrains  ·  marka: `jetbrains`
 
@@ -356,7 +356,7 @@ karo içinde kullanılır.
 
 - `chatgpt-dots.png` + beyaz · ChatGPT Dots (product)
 - `codex.png` · Codex (product)
-- `dall-e.png` · DALL·E (product)
+- `dall-e.png` + beyaz · DALL·E (product)
 - `sora.png` · Sora (product)
 
 ### OpenCode  ·  marka: `opencode`
@@ -527,4 +527,4 @@ karo içinde kullanılır.
 - `chatglm.png` + beyaz · GLM (Zhipu) (product)
 
 
-Toplam **161** logo, **142** beyaz sürüm.
+Toplam **161** logo, **145** beyaz sürüm.

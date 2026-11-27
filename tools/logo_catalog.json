@@ -32,7 +32,7 @@
   "name": "DALL·E",
   "brand": "openai",
   "kind": "product",
-  "src": "lobe:dalle"
+  "src": "lobe:dalle-text"
  },
  {
   "slug": "google",
@@ -75,13 +75,6 @@
   "brand": "google",
   "kind": "product",
   "src": "lobe:notebooklm"
- },
- {
-  "slug": "antigravity",
-  "name": "Antigravity",
-  "brand": "google",
-  "kind": "product",
-  "src": "lobe:antigravity"
  },
  {
   "slug": "nano-banana",
@@ -859,6 +852,13 @@
   "brand": "wandb",
   "kind": "wordmark",
   "src": "lobe:wandb"
+ },
+ {
+  "slug": "antigravity",
+  "name": "Antigravity",
+  "brand": "google",
+  "kind": "product",
+  "src": "file:tools/sources/antigravity.png"
  },
  {
   "slug": "meta-muse",

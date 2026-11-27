@@ -13,7 +13,7 @@ T = [
     # ---- OpenAI ----
     ("codex", "Codex", "openai", "product", "lobe:codex"),
     ("sora", "Sora", "openai", "product", "lobe:sora"),
-    ("dall-e", "DALL·E", "openai", "product", "lobe:dalle"),
+    ("dall-e", "DALL·E", "openai", "product", "lobe:dalle-text"),
     # ---- Google ----
     ("google", "Google", "google", "wordmark", "lobe:google"),
     ("google-deepmind", "Google DeepMind", "google", "wordmark", "lobe:deepmind"),
@@ -21,7 +21,6 @@ T = [
     ("gemini-cli", "Gemini CLI", "google", "product", "lobe:geminicli"),
     ("gemma", "Gemma", "google", "product", "lobe:gemma"),
     ("notebooklm", "NotebookLM", "google", "product", "lobe:notebooklm"),
-    ("antigravity", "Antigravity", "google", "product", "lobe:antigravity"),
     ("nano-banana", "Nano Banana", "google", "product", "lobe:nanobanana"),
     ("google-cloud", "Google Cloud", "google", "wordmark", "lobe:googlecloud"),
     ("google-ai-studio", "Google AI Studio", "google", "product", "lobe:aistudio"),
