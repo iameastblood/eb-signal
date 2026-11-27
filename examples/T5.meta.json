@@ -9,7 +9,7 @@
   "meta": "Çeyrek sonuçları  ·  örnek",
   "number": "%62",
   "label": "Veri merkezi gelirinde yıllık artış",
-  "context": "Örnek veri. Gerçek kullanımda rakam resmi bilançodan alınır.",
+  "context": "Örnek veri. Gerçek kullanımda rakam *resmi bilançodan* alınır.",
   "compare": [
    {
     "label": "Önceki çeyrek",
@@ -24,7 +24,7 @@
   "date": "27 Kas 2026"
  },
  "style": "EB SIGNAL",
- "version": "1.0.0",
+ "version": "1.3.0",
  "size": [
   1600,
   900

@@ -3,6 +3,14 @@
 Kural: her değişiklik VERSION'ı artırır. MAJOR = şablon yapısı/palet değişimi, MINOR = yeni şablon veya yeni alan, PATCH = ölçü/renk ince ayarı, logo ekleme.
 Haftada en fazla 1-2 değişiklik, Doğukan onayından sonra. Her satır: tarih, sürüm, ne değişti, neden (hangi veri).
 
+## 1.3.0 · 2026-11-27
+- MINOR: tüm şablonlarda **vurgu standardı** `*kelime*` / `[[kelime]]` (ember + biraz daha kalın, blok başına en fazla 2; T1 sub, T4 maddeler, T5 context, T6/T8 alıntı dahil). `highlight` alanı geriye uyumlu.
+- **Logo varsa marka adı yazılmaz** (T1, T2, T3, T5, T8): logonun yanındaki şirket adı / T2 şirket satırı kaldırıldı; T3'te kart adı marka adıyla aynıysa yalnız model satırı. Marka adı sadece logo yokken (harf karosu).
+- T8: **fotoğraf kredisi satırı ve `photo_credit` kaldırıldı**; kenar ışıması opaklığı ~yarıya (0.38 -> 0.19) ve daha dar/temiz; alt bantta yalnız kaynak + filigran + tarih; yerleşim yeniden düzenlendi (logo 96, başlık 60px/730, isim bloğu aşağı). Geniş fotoğraflar kafa merkezli omuz kadrajına otomatik kesilir (`person_max_aspect`).
+- T8 örnek fotoğraf kuralı: kameraya bakan/önden kare; örnek foto Dario Amodei TechCrunch Disrupt 2023 07 (CC BY 2.0, TechCrunch). Eski profil fotoğrafı kaldırıldı.
+- T1-T6 örnekleri yeniden üretildi (logo adı kaldırıldı, vurgu işaretleri).
+- Neden: Doğukan t195u geri bildirimi.
+
 ## 1.2.0 · 2026-11-27
 - MINOR: **video standardı ve hattı.** `tools/video/make_video.py` (tek komut: kaynak > Cartesia TR VO > senkron kesim > EN altyazı > müzik > HyperFrames hareket katmanı > final.mp4 + 3 kare), `tools/video/README.md`, `tools/video/examples/dot_v2.json`.
 - Yeni: `music/` (5 ElevenLabs enstrümantal parça: tech, finance, mystery, space, neutral; README + index.json). Kural: önce ElevenLabs, hata/kredi/bağlı değil (Orva) ise kütüphane.

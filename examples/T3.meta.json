@@ -3,17 +3,17 @@
  "data": {
   "tag": "KARŞILAŞTIRMA",
   "example": true,
-  "title": "Fiyatta OpenAI, bağlamda Anthropic önde",
+  "title": "Fiyatta *OpenAI*, bağlamda *Anthropic* önde",
   "subtitle": "Aynı iş yükü, iki model: hangisi nerede önde",
   "left": {
    "logo": "openai",
-   "name": "OpenAI",
-   "sub": "Model A"
+   "name": "Model A",
+   "sub": "Örnek veri"
   },
   "right": {
    "logo": "claude",
-   "name": "Anthropic",
-   "sub": "Model B"
+   "name": "Model B",
+   "sub": "Örnek veri"
   },
   "metrics": [
    {
@@ -69,7 +69,7 @@
   "date": "27 Kas 2026"
  },
  "style": "EB SIGNAL",
- "version": "1.0.0",
+ "version": "1.3.0",
  "size": [
   1600,
   900

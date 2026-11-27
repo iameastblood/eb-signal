@@ -4,8 +4,7 @@
   "tag": "ALINTI",
   "example": "ÖRNEK İÇERİK",
   "bg": "ember_01.jpg",
-  "quote": "Bu örnek bir alıntıdır. Gerçek kullanımda söz, kaynağından birebir çevrilir ve anlamı değiştirilmez.",
-  "highlight": "birebir çevrilir",
+  "quote": "Bu örnek bir alıntıdır. Gerçek kullanımda söz, kaynağından *birebir çevrilir* ve anlamı değiştirilmez.",
   "logo": "anthropic",
   "name": "Örnek Kişi",
   "role": "Unvan, Şirket (örnek)",
@@ -13,7 +12,7 @@
   "date": "27 Kas 2026"
  },
  "style": "EB SIGNAL",
- "version": "1.0.0",
+ "version": "1.3.0",
  "size": [
   1600,
   900

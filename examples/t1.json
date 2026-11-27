@@ -1,5 +1,17 @@
-{"tag":"HABER","example":"ÖRNEK İÇERİK","bg":"ember_01.jpg","logo":"openai","company":"OpenAI","meta":"Resmi duyuru  ·  27 Kas",
- "headline":"Yeni model ailesi kodlamada fark atıyor","highlight":"kodlamada fark atıyor",
- "sub":"Şirket, ücretsiz kullanıcılar için de açılan sürümün detaylarını paylaştı.",
- "chips":["Ücretsiz kullanıcılara açık","Yeni API fiyatı","Hemen kullanımda"],
- "source":"OpenAI blog (örnek)","date":"27 Kas 2026"}
+{
+ "tag": "HABER",
+ "example": "ÖRNEK İÇERİK",
+ "bg": "ember_01.jpg",
+ "logo": "openai",
+ "company": "OpenAI",
+ "meta": "Resmi duyuru  ·  27 Kas",
+ "headline": "Yeni model ailesi *kodlamada fark atıyor*",
+ "sub": "Şirket, ücretsiz kullanıcılar için de açılan sürümün detaylarını paylaştı.",
+ "chips": [
+  "Ücretsiz kullanıcılara açık",
+  "Yeni API fiyatı",
+  "Hemen kullanımda"
+ ],
+ "source": "OpenAI blog (örnek)",
+ "date": "27 Kas 2026"
+}

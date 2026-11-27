@@ -29,13 +29,49 @@ def font(kind, size, wght=700):
         if 'eight' in n: vals.append(wght)
         elif 'ptical' in n: vals.append(min(max(size, a['minimum']), a['maximum']))
         else: vals.append(a['default'])
-    f.set_variation_by_axes(vals); _fc[k] = f; return f
+    f.set_variation_by_axes(vals); f._eb = (kind, size, wght); _fc[k] = f; return f
 
 def logo(slug_or_path):
     p = slug_or_path
     if not os.path.exists(p): p = os.path.join(ROOT, "logos", f"{slug_or_path}.png")
     if not os.path.exists(p): raise SystemExit(f"logo yok: {slug_or_path} (logos.csv'ye bak, AI ile logo ÇİZME)")
     return Image.open(p).convert("RGBA")
+
+
+# ---------- emphasis markup ----------
+_MARK = re.compile(r"\[\[(.+?)\]\]|\*(?!\s)(.+?)(?<!\s)\*")
+def parse_marks(t, highlight=None):
+    """'Fiyat *yarıya* indi' / 'Fiyat [[yarıya]] indi' -> ('Fiyat yarıya indi', [(6,12)]). Max 2 emphasis per text block."""
+    out, hl, last, n = "", [], 0, 0
+    for m in _MARK.finditer(t):
+        out += t[last:m.start()]; g = m.group(1) or m.group(2)
+        hl.append((len(out), len(out)+len(g))); out += g; last = m.end(); n += 1
+    out += t[last:]
+    if highlight and highlight in out and not hl: i = out.index(highlight); hl.append((i, i+len(highlight))); n += 1
+    if n > 2: raise SystemExit(f"bir metin bloğunda en fazla 2 vurgu: {t[:50]}...")
+    return out, hl
+
+def plain(t): return parse_marks(t)[0] if t else t
+
+def bold_of(f):
+    """Slightly bolder variant of font f (same family/size) for emphasis. Head max 700, body +200."""
+    kind, size, wght = f._eb
+    return font(kind, size, min(wght+(100 if kind == 'head' else 200), 700 if kind != 'body' else 900))
+
+_brands = {}
+def is_brand(text, slug):
+    """True when `text` is just the brand name of logo `slug` (name/brand/slug in logos.csv) -> must not be printed next to the logo."""
+    import csv
+    if not _brands:
+        try:
+            for r in csv.DictReader(open(os.path.join(ROOT, "logos.csv"), encoding="utf-8")):
+                _brands[r["slug"]] = {re.sub(r"\W", "", x.lower()) for x in (r["slug"], r.get("name", ""), r.get("brand", ""))}
+        except Exception: pass
+    n = re.sub(r"\W", "", (text or "").lower())
+    return bool(n) and n in (_brands.get(slug) or {re.sub(r"\W", "", (slug or "").lower())})
+
+def has_logo(slug):
+    return bool(slug) and os.path.exists(os.path.join(ROOT, "logos", f"{slug}.png"))
 
 class Canvas:
     def __init__(s):
@@ -58,24 +94,27 @@ class Canvas:
             else: lines.append(cur); cur = w
         if cur: lines.append(cur)
         return lines
-    def rich(s, x, y, t, highlight, f, maxw, step, maxlines, col=None, hcol=None):
-        """Wrapped text; words inside `highlight` substring drawn in ember."""
-        col = col or hx(C['text']); hcol = hcol or hx(C['ember'])
-        hs = he = -1
-        if highlight and highlight in t: hs = t.index(highlight); he = hs+len(highlight)
-        words, pos = [], 0
-        for m in re.finditer(r"\S+", t): words.append((m.group(), hs <= m.start() < he))
+    def layout(s, t, highlight, f, maxw):
+        """Lines of (word, emph) after markup parsing. Emphasis words use the bolder font variant for measuring."""
+        t, hl = parse_marks(t, highlight); hf = bold_of(f)
         lines, cur, cw = [], [], 0
-        for w, h in words:
-            ww = s.tw(w+" ", f)
-            if cw+ww-s.tw(" ", f) > maxw and cur: lines.append(cur); cur, cw = [], 0
-            cur.append((w, h)); cw += ww
+        for m in re.finditer(r"\S+", t):
+            h = any(a_ < m.end() and m.start() < b_ for a_, b_ in hl); ff = hf if h else f
+            ww = s.tw(m.group()+" ", ff)
+            if cw+ww-s.tw(" ", ff) > maxw and cur: lines.append(cur); cur, cw = [], 0
+            cur.append((m.group(), h)); cw += ww
         if cur: lines.append(cur)
+        return lines
+    def rich(s, x, y, t, highlight, f, maxw, step, maxlines, col=None, hcol=None):
+        """Wrapped text. Emphasis = ember + slightly bolder weight. Mark words with *word* or [[word]] (max 2 per block);
+        legacy `highlight` substring still works. Returns the y after the last line."""
+        col = col or hx(C['text']); hcol = hcol or hx(C['ember']); hf = bold_of(f)
+        lines = s.layout(t, highlight, f, maxw)
         if len(lines) > maxlines: raise SystemExit(f"metin çok uzun ({len(lines)} satır > {maxlines}): {t[:40]}...")
         for i, ln in enumerate(lines):
             xx = x
             for w, h in ln:
-                s.text((xx, y+i*step), w, f, hcol if h else col); xx += s.tw(w+" ", f)
+                ff = hf if h else f; s.text((xx, y+i*step), w, ff, hcol if h else col); xx += s.tw(w+" ", ff)
         return y+len(lines)*step
     def glow(s, cx, cy, r, color, alpha=80):
         g = Image.new("RGBA", s.im.size, (0, 0, 0, 0)); d = ImageDraw.Draw(g)
@@ -144,13 +183,14 @@ def t1(d, out):
     if d.get("bg"): bg_image(cv, d["bg"])
     top(cv, d.get("tag", "HABER"), stamp_of(d))
     tw = any_tile(cv, (M, 150), 112, d.get("logo"), d.get("company", ""))
-    cv.text((M+tw+24, 186), d.get("company", ""), font('head', 40, 700), hx(C['text']), "lm")
-    cv.text((M+tw+24, 228), d.get("meta", ""), font('body', 24, 500), hx(C['muted']), "lm")
+    if has_logo(d.get("logo")): cv.text((M+tw+24, 206), d.get("meta", ""), font('body', 24, 500), hx(C['muted']), "lm")   # logo shown: never repeat the brand name
+    else:
+        cv.text((M+tw+24, 186), d.get("company", ""), font('head', 40, 700), hx(C['text']), "lm")
+        cv.text((M+tw+24, 228), d.get("meta", ""), font('body', 24, 500), hx(C['muted']), "lm")
     y = cv.rich(M, 330, d["headline"], d.get("highlight"), font('head', 80, 700), 880, 92, 3)
-    fs = font('body', 32, 400); sub = cv.wrap(d.get("sub", ""), fs, 780) if d.get("sub") else []
-    if len(sub) > 2: raise SystemExit("sub en fazla 2 satır")
-    for i, t in enumerate(sub): cv.text((M, y+20+i*46), t, fs, hx("#B4BBC9"))
-    cy = y+20+len(sub)*46+36; x = M; fc = font('body', 26, 600)
+    fs = font('body', 32, 400)
+    ye = cv.rich(M, y+20, d["sub"], None, fs, 780, 46, 2, col=hx("#B4BBC9")) if d.get("sub") else y
+    cy = (ye+36) if d.get("sub") else y+20+36; x = M; fc = font('body', 26, 600)
     for t in d.get("chips", [])[:3]:
         w = cv.tw(t, fc)+48
         if cy+56 > 790: break
@@ -163,7 +203,7 @@ def t2(d, out):
     cv = Canvas(); top(cv, d.get("tag", "BENCHMARK"), stamp_of(d))
     cv.rich(M, 112, d["title"], d.get("highlight"), font("head", 60, 700), 1150, 70, 2)
     hib = d.get("higher_is_better", True)
-    sub = d.get("subtitle", "") + ("  ·  " if d.get("subtitle") else "") + ("yüksek olan daha iyi" if hib else "düşük olan daha iyi")
+    sub = plain(d.get("subtitle", "")) + ("  ·  " if d.get("subtitle") else "") + ("yüksek olan daha iyi" if hib else "düşük olan daha iyi")
     cv.text((M, 274), sub, font('body', 26, 400), hx(C['muted']))
     rows = sorted(d["rows"], key=lambda r: r["value"], reverse=hib)[:6]
     n = len(rows); rh = 86 if n <= 5 else 74; top_y = 340
@@ -175,8 +215,10 @@ def t2(d, out):
     for i, r in enumerate(rows):
         y = top_y+i*rh; win = i == 0
         any_tile(cv, (M, y+2), 60, r.get("logo"), r.get("company", r["name"]), pad=0.18, radius=14, wide=False)
-        cv.text((M+82, y+18), r["name"], font('head', 32, 700), hx(C['text'] if win else "#D5D9E2"), "lm")
-        cv.text((M+82, y+50), r.get("company", ""), font('body', 22, 500), hx(C['muted']), "lm")
+        if has_logo(r.get("logo")): cv.text((M+82, y+33), r["name"], font('head', 34, 700), hx(C['text'] if win else "#D5D9E2"), "lm")   # logo shown: no brand line under the name
+        else:
+            cv.text((M+82, y+18), r["name"], font('head', 32, 700), hx(C['text'] if win else "#D5D9E2"), "lm")
+            cv.text((M+82, y+50), r.get("company", ""), font('body', 22, 500), hx(C['muted']), "lm")
         bw = max((x1-x0)*r["value"]/vmax, 90)
         cv.rrect((x0, y+8, x1, y+56), 10, fill=hx(C['surface']))
         cv.rrect((x0, y+8, x0+bw, y+56), 10, fill=hx(C['ember'] if win else C['bar']))
@@ -188,15 +230,18 @@ def t3(d, out):
     """metrics: [{label, values:[a,b] (numbers), display:[str,str], better:'higher'|'lower'|'none'}]"""
     cv = Canvas(); top(cv, d.get("tag", "KARŞILAŞTIRMA"), stamp_of(d))
     cv.rich(M, 104, d["title"], d.get("highlight"), font('head', 60, 700), 1456, 70, 1)
-    cv.text((M, 186), d.get("subtitle", ""), font('body', 28, 400), hx(C['muted']))
+    cv.text((M, 186), plain(d.get("subtitle", "")), font('body', 28, 400), hx(C['muted']))
     cw, y0, y1 = 690, 250, 784
     mets = d["metrics"][:4]
     for ci, side in enumerate([d["left"], d["right"]]):
         x = M if ci == 0 else W-M-cw
         cv.rrect((x, y0, x+cw, y1), 28, fill=hx(C['surface']), outline=hx(C['line']), width=2)
         any_tile(cv, (x+36, y0+32), 84, side.get("logo"), side["name"], radius=20, wide=False)
-        cv.text((x+144, y0+55), side["name"], font('head', 38, 700), hx(C['text']), "lm")
-        cv.text((x+144, y0+92), side.get("sub", ""), font('body', 24, 500), hx(C['muted']), "lm")
+        if has_logo(side.get("logo")) and is_brand(side["name"], side["logo"]):      # name would just repeat the logo: show only the model/sub line
+            cv.text((x+144, y0+74), side.get("sub") or "", font('head', 38, 700), hx(C['text']), "lm")
+        else:
+            cv.text((x+144, y0+55), side["name"], font('head', 38, 700), hx(C['text']), "lm")
+            cv.text((x+144, y0+92), side.get("sub", ""), font('body', 24, 500), hx(C['muted']), "lm")
         for mi, m in enumerate(mets):
             ry = y0+158+mi*88; a, b = m["values"]; bet = m.get("better", "higher")
             cv.line((x+36, ry-10, x+cw-36, ry-10), hx(C['line']), 1)
@@ -226,10 +271,8 @@ def t4(d, out):
     fs = font('body', 28, 400)
     pts = d.get("points", [])[:3]; yy = y+28
     for p in pts:
-        ls = cv.wrap(p, fs, lw-28)
         cv.rect((lx, yy+12, lx+10, yy+22), hx(C['ember']))
-        for j, t in enumerate(ls[:2]): cv.text((lx+28, yy+j*40), t, fs, hx(C['soft']))
-        yy += 40*min(len(ls), 2)+18
+        yy = cv.rich(lx+28, yy, p, None, fs, lw-28, 40, 2, col=hx(C['soft']))+18
     # frame: fitted to screenshot aspect, centred in y 110..786
     p = d["screenshot"]; p = p if os.path.exists(p) else os.path.join(ROOT, p)
     shot = Image.open(p).convert("RGBA")
@@ -256,15 +299,16 @@ def t5(d, out):
     if d.get("bg"): bg_image(cv, d["bg"], fade_to=1500, floor=0.35)
     top(cv, d.get("tag", "RAKAM"), stamp_of(d))
     tw = any_tile(cv, (M, 140), 88, d.get("logo"), d.get("company", ""), radius=20)
-    cv.text((M+tw+24, 168), d.get("company", ""), font('head', 36, 700), hx(C['text']), "lm")
-    cv.text((M+tw+24, 206), d.get("meta", ""), font('body', 24, 500), hx(C['muted']), "lm")
+    if has_logo(d.get("logo")): cv.text((M+tw+24, 184), d.get("meta", ""), font('body', 24, 500), hx(C['muted']), "lm")
+    else:
+        cv.text((M+tw+24, 168), d.get("company", ""), font('head', 36, 700), hx(C['text']), "lm")
+        cv.text((M+tw+24, 206), d.get("meta", ""), font('body', 24, 500), hx(C['muted']), "lm")
     nf = font('head', 250, 700); num = d["number"]
     while cv.tw(num, nf) > 900: nf = font('head', nf.size/S-10, 700)
     cv.text((M-8, 470), num, nf, hx(C['ember']), "ls")
     y = cv.rich(M, 500, d["label"], None, font('head', 48, 700), 900, 58, 2)
     if d.get("context"):
-        for i, t in enumerate(cv.wrap(d["context"], font('body', 28, 400), 900)[:2]):
-            cv.text((M, y+24+i*40), t, font('body', 28, 400), hx("#B4BBC9"))
+        cv.rich(M, y+24, d["context"], None, font('body', 28, 400), 900, 40, 2, col=hx("#B4BBC9"))
     if d.get("compare"):
         x0, y0, x1 = 1080, 300, W-M
         items = d["compare"][:3]; y = y0
@@ -281,7 +325,7 @@ def t6(d, out):
     if d.get("bg"): bg_image(cv, d["bg"], fade_to=1600, floor=0.55)
     top(cv, d.get("tag", "ALINTI"), stamp_of(d))
     qf = font('head', 54, 600)
-    nlines = len(cv.wrap(d["quote"], qf, 1250))
+    nlines = len(cv.layout(d["quote"], d.get("highlight"), qf, 1250))
     if nlines > 6: raise SystemExit("alıntı en fazla 6 satır")
     blockh = nlines*68+70+88; y0 = 110+(690-blockh)/2
     cv.text((M-6, y0+130), "“", font('head', 260, 700), hx(C['ember']), "ls")
@@ -385,10 +429,18 @@ def t8(d, out):
     al = cut.getchannel("A"); bb = al.point(lambda v: 255 if v > 24 else 0).getbbox(); cut = cut.crop(bb)
     W0, H0 = cut.size
     # which sides of the photo frame cut the body (not the real silhouette): those get faded, never glowed or outlined
-    A0 = np.asarray(cut.getchannel("A")).astype(np.float32)/255
-    touch_l = A0[:, :3].mean() > 0.25; touch_r = A0[:, -3:].mean() > 0.25
     keep = float(d.get("person_crop_bottom", 0.66))
     cut = cut.crop((0, 0, W0, int(H0*keep))); H0 = cut.height
+    # wide photo (torso spreads sideways): crop to a bust-shaped window centred on the head (centroid of the top of the matte)
+    A0 = np.asarray(cut.getchannel("A")).astype(np.float32)/255
+    maxar = float(d.get("person_max_aspect", 0.95))
+    if W0 > H0*maxar:
+        top_rows = A0[:max(1, int(H0*0.22))]; cols = top_rows.sum(axis=0)
+        hx_c = int((cols*np.arange(W0)).sum()/max(cols.sum(), 1e-6)); half = int(H0*maxar/2)
+        l = min(max(hx_c-half, 0), W0-2*half); cut = cut.crop((l, 0, l+2*half, H0)); W0 = cut.width
+        A0 = np.asarray(cut.getchannel("A")).astype(np.float32)/255
+    # which sides of the (cropped) photo cut the body rather than the real silhouette: faded later, never glowed or outlined
+    touch_l = A0[:int(H0*0.8), :3].mean() > 0.2; touch_r = A0[:int(H0*0.8), -3:].mean() > 0.2
     ph = int(S*(H-50)); pw = int(W0*ph/H0)
     if pw > S*W*0.46: pw = int(S*W*0.46); ph = int(H0*pw/W0)
     cut = cut.resize((pw, ph), Image.LANCZOS)
@@ -422,7 +474,7 @@ def t8(d, out):
     shadow = Ap.filter(ImageFilter.GaussianBlur(S*26)).point(lambda v: int(v*0.60))                  # soft contact shadow
     sh = Image.new("RGBA", big, (0, 0, 0, 0)); sh.putalpha(shadow)
     cv.im.alpha_composite(sh, (px_-pad-int(S*22), py_-pad+int(S*10)))
-    glow = Ap.filter(ImageFilter.MaxFilter(5)).filter(ImageFilter.GaussianBlur(S*16)).point(lambda v: int(v*0.38))   # follows the matte, not a box
+    glow = Ap.filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.GaussianBlur(S*9)).point(lambda v: int(v*0.19))   # follows the matte, not a box; ~50% of v1.1.1 opacity
     gl = Image.new("RGBA", big, hx(C['ember'])); gl.putalpha(glow)
     cv.im.alpha_composite(gl, (px_-pad, py_-pad))
     person = Image.fromarray((rgb*255).astype(np.uint8)).convert("RGBA"); person.putalpha(A_img)
@@ -431,28 +483,21 @@ def t8(d, out):
     top(cv, d.get("tag", "KİŞİ"), stamp_of(d))
     y = 130
     if d.get("logo") or d.get("company"):
-        tw = any_tile(cv, (M, y), 88, d.get("logo"), d.get("company", ""), radius=20)
-        if d.get("company"): cv.text((M+tw+22, y+44), d["company"], font('head', 34, 700), hx(C['text']), "lm")
-    y = cv.rich(M, 270, d["headline"], d.get("highlight"), font('head', 60, 700), 720, 70, 4)
+        tw = any_tile(cv, (M, y), 96, d.get("logo"), d.get("company", ""), radius=22)
+        if not has_logo(d.get("logo")) and d.get("company"): cv.text((M+tw+22, y+48), d["company"], font('head', 34, 700), hx(C['text']), "lm")   # logo shown: never repeat the brand name
+    y = cv.rich(M, 262, d["headline"], d.get("highlight"), font('head', 60, 700), 730, 70, 4)
     if d.get("quote"):
-        qf = font('head', 34, 500); ql = cv.wrap("“"+d["quote"]+"”", qf, 680)
+        qf = font('head', 34, 500); ql = cv.layout("“"+d["quote"]+"”", d.get("quote_highlight"), qf, 680)
         if len(ql) > 4: raise SystemExit("alıntı en fazla 4 satır")
         cv.rect((M, y+28, M+5, y+28+len(ql)*46), hx(C['ember']))
-        for i, t in enumerate(ql): cv.text((M+28, y+28+i*46), t, qf, hx(C['soft']))
-        y += 28+len(ql)*46
+        y = cv.rich(M+28, y+28, "“"+d["quote"]+"”", d.get("quote_highlight"), qf, 680, 46, 4, col=hx(C['soft']))
     if d.get("sub"):
-        fs = font('body', 28, 400); sl = cv.wrap(d["sub"], fs, 720)
-        if len(sl) > 3: raise SystemExit("sub en fazla 3 satır")
-        for i, t in enumerate(sl): cv.text((M, y+24+i*40), t, fs, hx("#B4BBC9"))
-        y += 24+len(sl)*40
-    if y > 650: raise SystemExit("metin çok uzun (kişi bloğuna taşıyor)")
-    cv.text((M, 700), d["person_name"], font('head', 36, 700), hx(C['text']), "lm")
-    cv.text((M, 740), d.get("role", ""), font('body', 24, 500), hx(C['muted']), "lm")
-    # --- source (+ photo credit) and watermark
-    src, cr = d["source"], d.get("photo_credit")
-    if cr and cv.tw("Kaynak: "+src+" · Foto: "+cr, font('body', 22, 500)) <= 560: src, cr = src+" · Foto: "+cr, None
-    elif cr: cv.text((M, 780), "Foto: "+cr, font('body', 22, 500), hx(C['dim']), "lm")
-    bottom(cv, src, d["date"], maxw=560)
+        y = cv.rich(M, y+24, d["sub"], None, font('body', 28, 400), 730, 40, 3, col=hx("#B4BBC9"))
+    if y > 672: raise SystemExit("metin çok uzun (kişi bloğuna taşıyor)")
+    cv.text((M, 716), d["person_name"], font('head', 36, 700), hx(C['text']), "lm")
+    cv.text((M, 756), d.get("role", ""), font('body', 24, 500), hx(C['muted']), "lm")
+    # --- source line (only a news source; NO photo credit on the image) and watermark
+    bottom(cv, d["source"], d["date"], maxw=560)
     return cv.save(out, dict(template="T8", cutout=method, data=d))
 
 TEMPLATES = dict(t1=t1, t2=t2, t3=t3, t4=t4, t5=t5, t6=t6, t8=t8)

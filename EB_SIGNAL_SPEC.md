@@ -1,10 +1,10 @@
-# EB SIGNAL · Spec v1.1 (VERSION 1.1.0)
+# EB SIGNAL · Spec v1.3 (VERSION 1.3.0)
 @eastblood_tr ortak görsel standardı. X Marabası, Manus, Orva görsel üretmeden önce bunu okur.
 Referans kod: `ebstyle.py` + `render.py`. Ölçüler mantıksal piksel (render 2x yapılıp küçültülür).
 
 ## 1. Değişmez kurallar
 1. Boyut her zaman **1600x900 (16:9)**. Başka oran yok.
-2. Şirket/lab/ürün varsa **gerçek logo** `logos/` klasöründen gelir (logos.csv). Logo yapay zekâ ile ASLA çizilmez, yeniden boyanmaz. Logo yoksa: **logoyu sen ekle** (bkz. 10. Logo kütüphanesi büyür); ekleyemezsen harf karosu + şirket adı ve Güncelleme Protokolü'ne not düş.
+2. Şirket/lab/ürün varsa **gerçek logo** `logos/` klasöründen gelir (logos.csv). Logo yapay zekâ ile ASLA çizilmez, yeniden boyanmaz. Logo yoksa: **logoyu sen ekle** (bkz. 10. Logo kütüphanesi büyür); ekleyemezsen harf karosu + şirket adı (yalnız logo yoksa) ve Güncelleme Protokolü'ne not düş.
 3. Yapay zekâ sadece **arka plan** üretir (bkz. 6). Yazı, logo, şekil, filigran kodla (render.py) basılır.
 4. **Rakam uydurulmaz.** Her rakam resmi kaynaktan. Resmi veri yoksa grafik (T2/T3/T5) yapılmaz.
 5. **Kaynak satırı görselin içinde** (sol alt "Kaynak: ..."). render.py `source` ve `date` olmadan çalışmaz.
@@ -24,18 +24,19 @@ Okunacak hiçbir metin 22px altında olmaz.
 ## 4. Ortak çerçeve
 - Kenar boşluğu 72px. Üst: ember çubuk 56x6 @ (72,60) + mono etiket x=144 y=63. Sağ üst opsiyonel damga.
 - Alt bant: çizgi y=804; sol kaynak (Inter 22, max 520px, taşarsa …); orta `@eastblood_tr` pill (h52, y 826-878); sağ tarih ("27 Kas 2026").
+- **Logo varsa marka adı yazılmaz** (T1-T8): logo ile aynı marka adını yanına bir daha basma. Wordmark logo adı zaten içerir; yalnız sembol olan logoda da ad yazılmaz. Marka adı sadece logo yokken (harf karosu) basılır. T2'de satırın model adı kalır, altına şirket satırı konmaz; T3'te kart adı marka adıyla aynıysa yalnız model/alt satır yazılır (kart adı = model/ürün adı olmalı). `meta` satırı (ör. "Resmi duyuru · 27 Kas") logonun yanında kalabilir.
 - Logo karosu: açık #F5F6F8 yuvarlak kare (radius %24), orijinal renkli logo %18-20 iç boşlukla. Wordmark (en/boy > 1.6) T1/T5/T6'da 2.4x geniş karo; T2/T3'te sembol logosu kullan.
 
 ## 5. Şablonlar ve JSON alanları (örnekler: examples/t*.json)
 | ID | Ne zaman | Yerleşim | Zorunlu JSON |
 |---|---|---|---|
-| T1 Haber | Şirket duyurusu, ürün, olay | AI arka plan + sol koyu gradyan; logo 112 @(72,150); başlık 80px y=330 max 3 satır/880px, `highlight` ember; alt metin 32px max 2 satır; max 3 çip | logo, company, headline, source, date (+meta, highlight, sub, chips, bg) |
+| T1 Haber | Şirket duyurusu, ürün, olay | AI arka plan + sol koyu gradyan; logo 112 @(72,150); başlık 80px y=330 max 3 satır/880px, *vurgu* ember; alt metin 32px max 2 satır; max 3 çip | logo, company, headline, source, date (+meta, highlight, sub, chips, bg) |
 | T2 Benchmark | Resmi skor, 3-6 model | Başlık 60px max 2 satır/1150px; alt başlık y=274 + "yüksek/düşük olan daha iyi" otomatik; satır y=340, adım 86; bar x 470-1380; sıralı; kazanan ember | title, rows[{name,company,logo,value}], higher_is_better, source, date (+subtitle, max, unit, format) |
 | T3 Versus | 2 ürün, eşleşen metrikler | 2 kart 690x534 (x72 / x838, y250-784); logo 84; max 4 metrik, adım 88; kazanan ember + ▲ (yüksek iyi) / ▼ (düşük iyi); VS rozeti | title, left/right{logo,name,sub}, metrics[{label,values,display,better}], source, date |
 | T4 Sızıntı | X'ten sızıntı, iddia, ekran görüntüsü | Sol 600px: durum rozeti (DOĞRULANMADI/DOĞRULANDI), başlık 60px max 4 satır, max 3 madde; sağ: pencere çerçevesi x720-1528, ekran görüntüsü sığdırılır, `highlight_box` ember çerçeve | title, screenshot, handle, status, source, date (+points, highlight_box) |
 | T5 Büyük rakam | Tek rakam haberi taşıyor | Logo 88 @(72,140); rakam 250px ember (taşarsa küçülür); etiket 48px; bağlam 28px; sağda max 3 karşılaştırma kartı | number, label, logo, company, source, date (+context, compare, bg) |
 | T6 Alıntı | Kişi/kurum sözü | Ember tırnak 260px; alıntı 54px max 6 satır/1250px dikey ortalı; altında logo/avatar + ad + unvan. Kaynak URL post metninin sonunda | quote, name, source, date (+role, logo, highlight, bg) |
-| T8 Kişi kompoziti | Haber gerçek bir kişiyle ilgili (açıklama, röportaj, duyuru) | Sağda kişi kesiti (~%45 genişlik, ember kenar ışıması, alt %20 sahneye erir); koyuya çekilmiş konu zemini (`bg`); solda logo karosu 88, başlık 60px max 4 satır/720px, opsiyonel alıntı (ember çubuk, max 4 satır) ve sub (max 3 satır), altta kişi adı + unvan; kaynak satırı (+ "Foto: ..." kredisi) | person (yol/URL), person_name, headline, source, date (+bg, quote, sub, role, logo, company, highlight, photo_credit, person_crop_bottom) |
+| T8 Kişi kompoziti | Haber gerçek bir kişiyle ilgili (açıklama, röportaj, duyuru) | Sağda kişi kesiti (~%45 genişlik, ince ve düşük opaklıklı ember kenar ışıması, alt kısım sahneye erir); koyuya çekilmiş konu zemini (`bg`); solda logo karosu 96 (yanında marka adı YOK), başlık 60px max 4 satır/730px, opsiyonel alıntı (ember çubuk, max 4 satır) ve sub (max 3 satır), altta kişi adı + unvan; alt bantta yalnız kaynak satırı + filigran + tarih (fotoğraf kredisi satırı YOK) | person (yol/URL) ya da person_cutout, person_name, headline, source, date (+bg, quote, sub, role, logo, company, person_crop_bottom, person_max_aspect, matting_model) |
 
 **T3 metrik yönü (better):** higher = yüksek iyi (puan, bağlam, hız token/sn, doğruluk) · lower = düşük iyi (fiyat, gecikme, hata oranı, bellek, maliyet) · none = karşılaştırma yok. Etikete otomatik "(düşük iyi)" eklenir.
 
@@ -75,13 +76,15 @@ Haberdeki şirket/araç logosu `logos.csv`'de yoksa **üreten ajan** (X Marabas�
 Toplu genişletme (şu an Manus) `tools/` ile yapılır; tek logoluk eklemeler `add_logo.py` iledir. Etiketler: ai-lab, coding, agent, tool, chip, cloud, model, app, framework, other.
 
 ## 11. T8 Gerçek kişi kompoziti (v1.1, Doğukan onaylı 27 Kas 2026)
-Akış: (1) kişinin **gerçek** fotoğrafı (resmi basın fotoğrafı, şirket sitesi, Wikimedia Commons, güvenilir basın; lisans/kaynak not edilir) -> (2) arka plan **yapay zekâ matting** ile kesilir (`rembg`; en iyi model varsayılan, bkz. aşağıdaki zincir) -> (3) konuya uygun zemin (gerçek fotoğraf ya da AI sahne, ör. veri merkezi; zemin koyuya çekilir, ember vurgu) -> (4) entegrasyon: kenar inceltme + renk bulaşması (halo) temizliği, sahneye renk eşitleme, kenarda ışık sarma (light wrap), yumuşak temas gölgesi, **alfayı izleyen** ember kenar ışıması (kutu/panel kenarı görünmez; fotoğraf çerçevesinin kestiği yanlar ve alt kısım sahneye eritilir) -> (5) yazılar EB SIGNAL fontlarıyla kodla, `@eastblood_tr` filigranı ve kaynak satırı.
+Akış: (1) kişinin **gerçek** fotoğrafı (resmi basın fotoğrafı, şirket sitesi, Wikimedia Commons, güvenilir basın; lisans/kaynak not edilir) -> (2) arka plan **yapay zekâ matting** ile kesilir (`rembg`; en iyi model varsayılan, bkz. aşağıdaki zincir) -> (3) konuya uygun zemin (gerçek fotoğraf ya da AI sahne, ör. veri merkezi; zemin koyuya çekilir, ember vurgu) -> (4) entegrasyon: kenar inceltme + renk bulaşması (halo) temizliği, sahneye renk eşitleme, kenarda ışık sarma (light wrap), yumuşak temas gölgesi, **alfayı izleyen**, tek renk ember ince kenar ışıması (opaklık ~%19, v1.1.1'in yarısı) (kutu/panel kenarı görünmez; fotoğraf çerçevesinin kestiği yanlar ve alt kısım sahneye eritilir) -> (5) yazılar EB SIGNAL fontlarıyla kodla, `@eastblood_tr` filigranı ve kaynak satırı.
 `python render.py t8 veri.json cikti.png` (örnek: examples/t8.json -> examples/T8.png).
 **Sert kurallar**
 - Kişinin yüzü **asla** yapay zekâ ile üretilmez veya değiştirilmez. Yalnız kesme, kırpma, renk eşitleme, ışık/kontrast. Yeniden çizme, yüz düzeltme, "AI portre" yasak.
 - **Sahte alıntı yok.** `quote` alanı yalnız kaynakta geçen sözdür; çeviriyse anlam değişmez. Kaynak `source` alanında.
 - Kişinin o mekanda **fiziksel olarak bulunduğu ima edilmez**: zemin açıkça tasarlanmış bir fondur (koyu, ember vurgu, kişi kesik ve ışımalı). Zeminde kişi/yüz olmaz.
-- Fotoğraf kaynağı biliniyorsa kaynak satırında kredi (`photo_credit`, ör. "Wikimedia Commons, CC BY 2.0"). CC BY lisanslı fotoğraflar kredisiz kullanılmaz.
+- **Görselde fotoğraf kredisi yazılmaz** ("Foto: ...", "Wikimedia" vb. yok; `photo_credit` alanı kaldırıldı). Kaynak satırı ("Kaynak: ...") yalnız haber kaynağı varsa kalır. Fotoğraf lisans notu sadece repo README'sinde örnek dosya için tutulur.
+- **Fotoğraf seçimi:** kişi **kameraya bakar / önden** durur; net, iyi ışıklı, yüksek çözünürlük. Yan bakış, profil, başı çevrilmiş, gözleri kapalı, el/bardak/mikrofon gibi nesnelerin yüzü kapattığı kareler seçilmez. Sahne arkası TechCrunch gibi logolu panolar sorun değil (kesilir). Eller kadrajda kalıyorsa `person_crop_bottom` ile bel üstünde kes. Resmi basın fotoğrafı > şirket sitesi > Wikimedia Commons (özgür lisans) > güvenilir basın. Adaylardan en az 3 kare karşılaştır, en iyisini al.
+- Kadraj: geniş fotoğrafta kişi otomatik olarak kafa merkezli omuz kadrajına kesilir (`person_max_aspect`, varsayılan 0.95); kesilen yanlar sahneye eritilir.
 - Kişinin logosu/şirketi varsa `logos/` klasöründen (bölüm 10).
 - Örnek/sahte içerik `"example": true` damgalıdır, yayınlanmaz.
 
@@ -113,3 +116,11 @@ Kural kaynağı: Notion Görsel Standart · EB SIGNAL > VİDEO STANDARDI. Uygula
 - Başlık kartı ve filigran (`@eastblood_tr` alt orta) animasyonlu, filigran nazik ve her zaman okunur.
 - Müzik: önce ElevenLabs (VO'nun ~20 dB altı), olmazsa `music/` kütüphanesi. VO varken orijinal ses tamamen kapalı.
 - 16:9 H.264/AAC, 1920x1080, 30 fps. Hareket katmanı HyperFrames (HTML+GSAP).
+
+## 13. Vurgu standardı (v1.3, Doğukan onaylı 27 Kas 2026)
+Önemli kelime/ifadeler **ember #FF5A36 + biraz daha kalın ağırlıkla** vurgulanır. Tüm şablonlarda aynı:
+- JSON metninde `*kelime*` ya da `[[kelime]]` ile işaretle: `"headline": "Fiyat *yarıya* indi"`. İşaretler çıktıda görünmez.
+- Her metin bloğunda **en fazla 1-2 vurgu** (3. işaret hata verir). Tüm metne ya da cümlenin çoğuna vurgu yapılmaz; vurgu rakam, karar, yeni bilgi gibi anahtar ifadeye gider.
+- Desteklenen alanlar: `headline`, `title`, `label`, `quote`, `sub`, `context`, `points[]` (T4), T8 `quote` ve `sub`. Eski `highlight` alanı çalışmaya devam eder ama yeni içerikte işaret kullan.
+- Ağırlık: başlık fontu (Space Grotesk, 700 üst sınır) zaten tam kalınsa renk değişir; gövde fontu (Inter) 400 -> 600, alıntı 600 -> 700.
+- Başlık ile alıntı birlikte olduğunda (T8) ikisinde de birer vurgu olabilir.

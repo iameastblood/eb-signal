@@ -23,7 +23,8 @@ python add_logo.py --src https://.../logo.png --slug claude-code --name "Claude 
 - Logo kütüphanesi büyür: haberdeki logo yoksa üreten ajan ekler, `git pull --rebase` ile push eder, başkasının logosunu silmez/yeniden adlandırmaz. Ayrıntı: bölüm 10, `add_logo.py --help`.
 - T8 kesimi AI matting: `birefnet-portrait` (varsayılan, ~928 MB indirme) > `birefnet-general` (~928 MB) > `isnet-general-use` (~170 MB) > `u2net_human_seg` (~168 MB) > yumuşak çerçeve. Kendi AI aracınla kestiysen JSON'a `"person_cutout": "kesilmis.png"` ver. Ayrıntı: spec bölüm 11.
 - Görsel yazısı ile post metni birbirini tamamlar, aynı cümleyi tekrar etmez: spec bölüm 12.
-- `examples/amodei_2023.jpg`: Wikimedia Commons, "Dario Amodei in 2023", fotoğraf UK Prime Minister (Flickr), CC BY 2.0. Sadece örnek içindir.
+- `examples/amodei_techcrunch_2023.jpg`: Wikimedia Commons, "Dario Amodei at TechCrunch Disrupt 2023 07" (https://commons.wikimedia.org/wiki/File:Dario_Amodei_at_TechCrunch_Disrupt_2023_07.jpg), fotoğraf TechCrunch (Flickr 53201933874), CC BY 2.0. Sadece örnek içindir; lisans notu yalnızca burada tutulur, görsellerde fotoğraf kredisi basılmaz.
+- Vurgu: metinde `*kelime*` ya da `[[kelime]]` = ember + kalın (blok başına en fazla 2). Logo varsa yanına marka adı basılmaz. Ayrıntı: spec bölüm 13 ve 4.
 
 ## Değişmez kurallar
 - Logo sadece `logos/` klasöründen (logos.csv). Yapay zekâ ile logo **asla** çizilmez.

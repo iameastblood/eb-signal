@@ -3,8 +3,7 @@
  "data": {
   "tag": "BENCHMARK",
   "example": true,
-  "title": "Model A, kodlama testinde rakiplerini geride bıraktı",
-  "highlight": "Model A,",
+  "title": "*Model A,* kodlama testinde rakiplerini geride bıraktı",
   "subtitle": "Kodlama testi, doğru çözüm oranı (%)",
   "higher_is_better": true,
   "max": 100,
@@ -44,7 +43,7 @@
   "date": "27 Kas 2026"
  },
  "style": "EB SIGNAL",
- "version": "1.0.0",
+ "version": "1.3.0",
  "size": [
   1600,
   900

@@ -1,7 +1,68 @@
-{"tag":"KARŞILAŞTIRMA","example":true,"title":"Fiyatta OpenAI, bağlamda Anthropic önde","subtitle":"Aynı iş yükü, iki model: hangisi nerede önde",
- "left":{"logo":"openai","name":"OpenAI","sub":"Model A"},"right":{"logo":"claude","name":"Anthropic","sub":"Model B"},
- "metrics":[{"label":"Kodlama puanı","values":[82.4,76.1],"display":["82.4","76.1"],"better":"higher"},
-            {"label":"Bağlam penceresi","values":[400,1000],"display":["400K","1M"],"better":"higher"},
-            {"label":"Girdi fiyatı ($/1M)","values":[2.0,3.0],"display":["2.00","3.00"],"better":"lower"},
-            {"label":"Gecikme (sn)","values":[0.9,0.6],"display":["0.9","0.6"],"better":"lower"}],
- "source":"ÖRNEK (gerçekte: resmi fiyat sayfaları)","date":"27 Kas 2026"}
+{
+ "tag": "KARŞILAŞTIRMA",
+ "example": true,
+ "title": "Fiyatta *OpenAI*, bağlamda *Anthropic* önde",
+ "subtitle": "Aynı iş yükü, iki model: hangisi nerede önde",
+ "left": {
+  "logo": "openai",
+  "name": "Model A",
+  "sub": "Örnek veri"
+ },
+ "right": {
+  "logo": "claude",
+  "name": "Model B",
+  "sub": "Örnek veri"
+ },
+ "metrics": [
+  {
+   "label": "Kodlama puanı",
+   "values": [
+    82.4,
+    76.1
+   ],
+   "display": [
+    "82.4",
+    "76.1"
+   ],
+   "better": "higher"
+  },
+  {
+   "label": "Bağlam penceresi",
+   "values": [
+    400,
+    1000
+   ],
+   "display": [
+    "400K",
+    "1M"
+   ],
+   "better": "higher"
+  },
+  {
+   "label": "Girdi fiyatı ($/1M)",
+   "values": [
+    2.0,
+    3.0
+   ],
+   "display": [
+    "2.00",
+    "3.00"
+   ],
+   "better": "lower"
+  },
+  {
+   "label": "Gecikme (sn)",
+   "values": [
+    0.9,
+    0.6
+   ],
+   "display": [
+    "0.9",
+    "0.6"
+   ],
+   "better": "lower"
+  }
+ ],
+ "source": "ÖRNEK (gerçekte: resmi fiyat sayfaları)",
+ "date": "27 Kas 2026"
+}
