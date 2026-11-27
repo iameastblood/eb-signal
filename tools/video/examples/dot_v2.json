@@ -1,0 +1,24 @@
+{
+  "source": "https://youtu.be/A4UNP-axGHU",
+  "title": "DOT: Sen yokken iş durmasın",
+  "tag": "RESMİ OPENAI VİDEOSU · AI HABER",
+  "logo": "openai",
+  "genre": "tech",
+  "lead": 0.5, "tail": 1.2,
+  "comma_ms": 200, "period_ms": 480, "speed": 0.95,
+  "sub_font_px": 41,
+  "lines": [
+    {"src_start": 0.0,  "tr_chunks": ["Uzun bir tatil hafta sonunda ekip izinde olsa bile", "müşteriler ürünü kullanmaya devam ediyor"],
+     "en_chunks": ["Even on a long holiday weekend, your team may be away,", "but customers keep using the product."]},
+    {"src_start": 5.2,  "tr_chunks": ["Open ey ay, yeni bir videoyla", "dot adlı asistanının gelen işleri ayıklamana nasıl yardım ettiğini gösterdi"],
+     "en_chunks": ["In a new video, OpenAI showed", "how its assistant, dot, helps you sort what comes in."]},
+    {"src_start": 11.9, "tr_chunks": ["Dot, çalıştığın yerlere bağlanıyor", "önemli olanı anlıyor ve senin yerine iş yapabiliyor"],
+     "en_chunks": ["Dot connects to where you work,", "understands what matters, and gets work done for you."]},
+    {"src_start": 18.7, "tr_chunks": ["Önemli konuşmaları takip ediyor", "gelenleri kayda alıyor", "ve yalnızca kritik bir durum varsa sana bildirim gönderiyor"],
+     "en_chunks": ["It follows the key threads,", "keeps a log of what comes in,", "and notifies you only if it is critical."]},
+    {"src_start": 26.6, "tr_chunks": ["Hangi kanalları izleyeceğini sen seçiyorsun", "istersen sorunları kendi başına çözmesini de isteyebiliyorsun"],
+     "en_chunks": ["You choose which channels it watches,", "and you can even ask it to solve problems on its own."]},
+    {"src_start": 37.0, "tr_chunks": ["Videoda bir müşteri geri bildirimi bile otomatik olarak", "bir Liniyır kaydına dönüşüyor"],
+     "en_chunks": ["In the video, customer feedback even becomes", "a Linear ticket automatically."]}
+  ]
+}

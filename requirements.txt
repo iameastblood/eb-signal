@@ -3,3 +3,5 @@ numpy
 rembg>=2.0   # T8 AI matting (birefnet-portrait vb.); yoksa çerçeve yedeği
 onnxruntime       # rembg için
 pymatting         # kenar halo temizliği (opsiyonel)
+requests          # tools/video (Cartesia/ElevenLabs REST)
+faster-whisper    # opsiyonel: tools/video --qa

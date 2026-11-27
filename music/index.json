@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "rule": "Ajanlar once ElevenLabs ile konuya uygun enstrumantal uretir. ElevenLabs baglanti hatasi verirse, kredi biterse, bagli degilse (Orva) bu kutuphaneden secer. Seviye: VO'nun yaklasik 20 dB altinda (loudnorm I=-36 LUFS, VO -16 LUFS).",
+  "format": "mp3 stereo 44.1 kHz 96 kbps, 75 sn, basta/sonda kisa fade. Dongu icin tools/video ffmpeg -stream_loop kullanir; 60 sn'den uzun video gerekmez.",
+  "source": "ElevenLabs Music (eleven_music_v2), Doğukan'ın hesabı, 2026-11-27. Telifsiz ticari kullanim: ElevenLabs plan kosullarina bagli.",
+  "genres": {
+    "tech":    {"file": "tech.mp3",    "label": "Teknoloji / lansman, minimal elektronik", "use": "model duyurusu, urun lansmani, AI araci, kodlama", "prompt": "Instrumental only, no vocals. Tech and AI product launch background music: minimal modern electronic, soft warm synth pads, gentle plucked arpeggio, light steady pulse, calm and confident, seamless loop-friendly with consistent energy, no big drops, about 75 seconds"},
+    "finance": {"file": "finance.mp3", "label": "Finans, piyano + nabiz", "use": "yatirim, deger, gelir, sirket haberi, piyasa", "prompt": "Instrumental only, no vocals. Finance and markets background music: soft felt piano with a subtle steady pulse and light low strings, thoughtful and professional, seamless loop-friendly with consistent energy, no big drops, about 75 seconds"},
+    "mystery": {"file": "mystery.mp3", "label": "Gizem / sizinti, koyu ambiyans", "use": "sizinti, dedikodu, gizli proje, guvenlik acigi", "prompt": "Instrumental only, no vocals. Mystery and leak news background music: dark ambient, low evolving drones, sparse distant textures, subtle tension, slow quiet pulse, seamless loop-friendly with consistent energy, no sudden hits, about 75 seconds"},
+    "space":   {"file": "space.mp3",   "label": "Robotik / uzay, sinematik pad", "use": "robot, uzay, buyuk olcek, donanim, bilim", "prompt": "Instrumental only, no vocals. Robotics and space background music: cinematic ambient pads, slow wide evolving textures, soft sub bass, gentle shimmering high tones, awe and scale without drama, seamless loop-friendly with consistent energy, no big drops, about 75 seconds"},
+    "neutral": {"file": "neutral.mp3", "label": "Notr, enerjik", "use": "genel haber, hafif konu, emin degilsen", "prompt": "Instrumental only, no vocals. Neutral upbeat background music for general news: light bright electronic groove, clean muted guitar, soft claps, positive and light, steady mid tempo, seamless loop-friendly with consistent energy, no big drops, about 75 seconds"}
+  }
+}

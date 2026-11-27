@@ -3,6 +3,12 @@
 Kural: her değişiklik VERSION'ı artırır. MAJOR = şablon yapısı/palet değişimi, MINOR = yeni şablon veya yeni alan, PATCH = ölçü/renk ince ayarı, logo ekleme.
 Haftada en fazla 1-2 değişiklik, Doğukan onayından sonra. Her satır: tarih, sürüm, ne değişti, neden (hangi veri).
 
+## 1.2.0 · 2026-11-27
+- MINOR: **video standardı ve hattı.** `tools/video/make_video.py` (tek komut: kaynak > Cartesia TR VO > senkron kesim > EN altyazı > müzik > HyperFrames hareket katmanı > final.mp4 + 3 kare), `tools/video/README.md`, `tools/video/examples/dot_v2.json`.
+- Yeni: `music/` (5 ElevenLabs enstrümantal parça: tech, finance, mystery, space, neutral; README + index.json). Kural: önce ElevenLabs, hata/kredi/bağlı değil (Orva) ise kütüphane.
+- Değişen kural (Doğukan t194u): altyazı kutusuz ve şeffaf (kontur + gölge), ~%11 küçük (46 > 41 px); virgül/nokta duraklamaları `<break>` ile; ses ekranla senkron; giriş/çıkış animasyonları ve hareketli filigran (HyperFrames).
+- Spec bölüm 13. Neden: v1 test videosu geri bildirimi.
+
 ## 1.1.1 · 2026-11-27
 - PATCH: T8 kesimi yapay zekâ matting'e geçti. Zincir birefnet-portrait > birefnet-general > isnet-general-use > u2net_human_seg > yumuşak çerçeve; `person_cutout` ile hazır şeffaf PNG verilebilir; `matting_model` / `EB_MATTING_MODEL` ile model zorlanır.
 - T8 entegrasyonu: kenar inceltme, halo temizliği (pymatting), sahneye renk eşitleme, light wrap, yumuşak temas gölgesi, alfayı izleyen ember ışıma, fotoğraf çerçevesinin kestiği kenarların sahneye erimesi. `person_crop_bottom` varsayılanı 0.66 (eller/masa nesneleri kadraj dışı).

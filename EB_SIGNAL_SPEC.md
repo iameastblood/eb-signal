@@ -102,3 +102,14 @@ Görselin üstündeki yazı ile post metni aynı cümleyi **asla** tekrar etmez.
 - **İyi:** Post: "Frontier laboratuvarlarından biri sessizce fiyatı yarıya indirdi. Rakipler bunu henüz fark etmedi." Görsel başlığı (T5): "1M token: $5 → $2,5" + bağlam satırı "Resmi fiyat sayfası, 27 Kas 2026".
 - **Kötü:** Post: "DeepSeek yeni modelini duyurdu, fiyat yarıya indi." Görsel başlığı: "DeepSeek yeni modelini duyurdu, fiyat yarıya indi". Aynı cümle iki kez, görsel hiçbir şey eklemiyor.
 - T8 için: görsel başlığı kişinin söylediği şeyin özü + unvan; post metni, o sözün neden önemli olduğuna dair kanca.
+
+
+## 13. Video standardı (v1.2.0)
+Kural kaynağı: Notion Görsel Standart · EB SIGNAL > VİDEO STANDARDI. Uygulama: `tools/video/` (tek komut), müzik: `music/`.
+- Türkçe Cartesia seslendirme (My Turkish Voice, sonic-3.6, `language: tr`), yabancı kelimeler TTS metninde Türkçe okunuşla (Open ey ay, Liniyır), ekranda doğru yazım.
+- Virgülde kısa nefes (`<break 200ms>`, ölçülen ~0,5 sn), noktada daha uzun (`<break 480ms>`, ~0,75 sn). Her şey tek nefes olmaz.
+- Ses ekranla senkron: her cümle kaynak videoda o anlatılanın göründüğü kesitle eşlenir.
+- İngilizce altyazı yakılır: kutu yok, şeffaf; kontur + yumuşak gölge, Inter 700 ~41 px, max 2 satır, giriş ve çıkış animasyonlu.
+- Başlık kartı ve filigran (`@eastblood_tr` alt orta) animasyonlu, filigran nazik ve her zaman okunur.
+- Müzik: önce ElevenLabs (VO'nun ~20 dB altı), olmazsa `music/` kütüphanesi. VO varken orijinal ses tamamen kapalı.
+- 16:9 H.264/AAC, 1920x1080, 30 fps. Hareket katmanı HyperFrames (HTML+GSAP).
