@@ -1,6 +1,6 @@
 {
  "template": "T8",
- "cutout": "rembg",
+ "cutout": "birefnet-portrait",
  "data": {
   "tag": "CEO AÇIKLAMASI",
   "example": "ÖRNEK İÇERİK",
@@ -18,7 +18,7 @@
   "date": "27 Kas 2026"
  },
  "style": "EB SIGNAL",
- "version": "1.1.0",
+ "version": "1.1.1",
  "size": [
   1600,
   900

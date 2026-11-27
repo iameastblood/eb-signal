@@ -3,6 +3,13 @@
 Kural: her değişiklik VERSION'ı artırır. MAJOR = şablon yapısı/palet değişimi, MINOR = yeni şablon veya yeni alan, PATCH = ölçü/renk ince ayarı, logo ekleme.
 Haftada en fazla 1-2 değişiklik, Doğukan onayından sonra. Her satır: tarih, sürüm, ne değişti, neden (hangi veri).
 
+## 1.1.1 · 2026-11-27
+- PATCH: T8 kesimi yapay zekâ matting'e geçti. Zincir birefnet-portrait > birefnet-general > isnet-general-use > u2net_human_seg > yumuşak çerçeve; `person_cutout` ile hazır şeffaf PNG verilebilir; `matting_model` / `EB_MATTING_MODEL` ile model zorlanır.
+- T8 entegrasyonu: kenar inceltme, halo temizliği (pymatting), sahneye renk eşitleme, light wrap, yumuşak temas gölgesi, alfayı izleyen ember ışıma, fotoğraf çerçevesinin kestiği kenarların sahneye erimesi. `person_crop_bottom` varsayılanı 0.66 (eller/masa nesneleri kadraj dışı).
+- Neden: eski u2net_human_seg saçta açık halo bırakıyordu, kişi sahneye oturmuyordu (Doğukan geri bildirimi).
+- Spec bölüm 12: görsel yazısı ile post metni birbirini tamamlar, aynı cümle tekrar edilmez.
+- Not: başka bir işçi `music/` ve `tools/video/` ekliyor; sürüm bu değişiklikle uyumlu şekilde PATCH artırıldı.
+
 ## 1.1.0 · 2026-11-27
 - MINOR: yeni şablon **T8 Kişi kompoziti** (gerçek kişi fotoğrafı + rembg ile otomatik kesim, konu zemini, ember kenar ışıması, EB SIGNAL fontları ve filigran). rembg yoksa yumuşak kenarlı çerçeve yedeği. Sert kurallar: yüz AI ile üretilmez/değiştirilmez, sahte alıntı yok, fiziksel varlık ima edilmez, foto kredisi.
 - Yeni `add_logo.py`: URL/dosya -> şeffaf kırpılmış PNG, #0A0C10 kontrast kontrolü, gerekirse `-white` sürüm, logos.csv satırı, `--push`.

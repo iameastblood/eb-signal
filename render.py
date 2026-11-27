@@ -10,7 +10,8 @@ d = json.load(open(sys.argv[2], encoding="utf-8"))
 for k in ("source", "date"):
     if not d.get(k): sys.exit(f"'{k}' zorunlu (kaynak satırı görselin içinde olmalı)")
 if sys.argv[1].lower() == "t8":
-    for k in ("person", "person_name", "headline"):
+    if not (d.get("person") or d.get("person_cutout")): sys.exit("T8 için 'person' (foto) ya da 'person_cutout' (hazır şeffaf PNG) zorunlu")
+    for k in ("person_name", "headline"):
         if not d.get(k): sys.exit(f"T8 için '{k}' zorunlu (gerçek kişi fotoğrafı: yol veya URL; yüz asla AI ile üretilmez)")
 txt = json.dumps(d, ensure_ascii=False)
 if "—" in txt: sys.exit("em dash (—) yasak")

@@ -1,4 +1,5 @@
 pillow>=10
 numpy
-rembg>=2.0   # T8 otomatik kesim (opsiyonel; yoksa çerçeve yedeği)
+rembg>=2.0   # T8 AI matting (birefnet-portrait vb.); yoksa çerçeve yedeği
 onnxruntime       # rembg için
+pymatting         # kenar halo temizliği (opsiyonel)

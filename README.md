@@ -21,7 +21,8 @@ python add_logo.py --src https://.../logo.png --slug claude-code --name "Claude 
 ```
 - T8 sert kuralları: yüz asla AI ile üretilmez/değiştirilmez (yalnız kesme, kırpma, renk, ışık); sahte alıntı yok; kişinin orada olduğu ima edilmez; foto kaynağı kredilenir. Ayrıntı: EB_SIGNAL_SPEC.md bölüm 11.
 - Logo kütüphanesi büyür: haberdeki logo yoksa üreten ajan ekler, `git pull --rebase` ile push eder, başkasının logosunu silmez/yeniden adlandırmaz. Ayrıntı: bölüm 10, `add_logo.py --help`.
-- `rembg` ilk kullanımda ~176 MB'lık modeli indirir. Yoksa T8 yumuşak kenarlı çerçeve yedeğine düşer.
+- T8 kesimi AI matting: `birefnet-portrait` (varsayılan, ~928 MB indirme) > `birefnet-general` (~928 MB) > `isnet-general-use` (~170 MB) > `u2net_human_seg` (~168 MB) > yumuşak çerçeve. Kendi AI aracınla kestiysen JSON'a `"person_cutout": "kesilmis.png"` ver. Ayrıntı: spec bölüm 11.
+- Görsel yazısı ile post metni birbirini tamamlar, aynı cümleyi tekrar etmez: spec bölüm 12.
 - `examples/amodei_2023.jpg`: Wikimedia Commons, "Dario Amodei in 2023", fotoğraf UK Prime Minister (Flickr), CC BY 2.0. Sadece örnek içindir.
 
 ## Değişmez kurallar

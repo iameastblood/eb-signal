@@ -75,7 +75,7 @@ Haberdeki şirket/araç logosu `logos.csv`'de yoksa **üreten ajan** (X Marabas�
 Toplu genişletme (şu an Manus) `tools/` ile yapılır; tek logoluk eklemeler `add_logo.py` iledir. Etiketler: ai-lab, coding, agent, tool, chip, cloud, model, app, framework, other.
 
 ## 11. T8 Gerçek kişi kompoziti (v1.1, Doğukan onaylı 27 Kas 2026)
-Akış: (1) kişinin **gerçek** fotoğrafı (resmi basın fotoğrafı, şirket sitesi, Wikimedia Commons, güvenilir basın; lisans/kaynak not edilir) -> (2) arka plan otomatik kesilir (`rembg`, model u2net_human_seg; kurulu değilse fotoğraf yumuşak kenarlı yuvarlak çerçevede kullanılır) -> (3) konuya uygun zemin (gerçek fotoğraf ya da AI sahne, ör. veri merkezi; zemin koyuya çekilir, ember vurgu) -> (4) renk eşitleme: hafif desatürasyon, serin ton, sağ kenarda sıcak ember ışık, kenarda ince ember ışıma -> (5) yazılar EB SIGNAL fontlarıyla kodla, `@eastblood_tr` filigranı ve kaynak satırı.
+Akış: (1) kişinin **gerçek** fotoğrafı (resmi basın fotoğrafı, şirket sitesi, Wikimedia Commons, güvenilir basın; lisans/kaynak not edilir) -> (2) arka plan **yapay zekâ matting** ile kesilir (`rembg`; en iyi model varsayılan, bkz. aşağıdaki zincir) -> (3) konuya uygun zemin (gerçek fotoğraf ya da AI sahne, ör. veri merkezi; zemin koyuya çekilir, ember vurgu) -> (4) entegrasyon: kenar inceltme + renk bulaşması (halo) temizliği, sahneye renk eşitleme, kenarda ışık sarma (light wrap), yumuşak temas gölgesi, **alfayı izleyen** ember kenar ışıması (kutu/panel kenarı görünmez; fotoğraf çerçevesinin kestiği yanlar ve alt kısım sahneye eritilir) -> (5) yazılar EB SIGNAL fontlarıyla kodla, `@eastblood_tr` filigranı ve kaynak satırı.
 `python render.py t8 veri.json cikti.png` (örnek: examples/t8.json -> examples/T8.png).
 **Sert kurallar**
 - Kişinin yüzü **asla** yapay zekâ ile üretilmez veya değiştirilmez. Yalnız kesme, kırpma, renk eşitleme, ışık/kontrast. Yeniden çizme, yüz düzeltme, "AI portre" yasak.
@@ -84,3 +84,21 @@ Akış: (1) kişinin **gerçek** fotoğrafı (resmi basın fotoğrafı, şirket 
 - Fotoğraf kaynağı biliniyorsa kaynak satırında kredi (`photo_credit`, ör. "Wikimedia Commons, CC BY 2.0"). CC BY lisanslı fotoğraflar kredisiz kullanılmaz.
 - Kişinin logosu/şirketi varsa `logos/` klasöründen (bölüm 10).
 - Örnek/sahte içerik `"example": true` damgalıdır, yayınlanmaz.
+
+### T8 matting modeli (v1.1.1)
+`render.py t8` kesimi şu zincirle dener, ilk çalışan kazanır (sonuç tmp'de önbelleğe alınır):
+1. `person_cutout`: ajanın kendi AI görsel aracıyla önceden kestiği **şeffaf PNG** (yol/URL). Verilirse model çalışmaz; yalnız kenar inceltme ve entegrasyon uygulanır. `person` zaten gerçek şeffaflıklı PNG ise de aynen kullanılır.
+2. **birefnet-portrait** (varsayılan, saç kenarları en temiz; ~928 MB indirme, CPU'da ~1 dk) -> 3. **birefnet-general** (~928 MB, ~30 sn; camı biraz kirli bırakabilir) -> 4. **isnet-general-use** + alpha matting (~170 MB, ~5 sn; kenarlar daha yumuşak) -> 5. **u2net_human_seg** (~168 MB, ~1 sn; saçta açık halo bırakır, son çare) -> 6. rembg/onnx yoksa fotoğraf yumuşak kenarlı yuvarlak çerçevede.
+Tek modeli zorlamak: JSON'da `"matting_model"` ya da ortam değişkeni `EB_MATTING_MODEL`. Modeller ilk kullanımda `~/.rembg/models` içine iner (ortam internete kapalıysa `person_cutout` ver). `person_crop_bottom` (varsayılan 0.66): kesilen kişinin üst yüzde kaçı tutulacak (bel altı, eller, masa nesneleri dışarıda kalır).
+Karşılaştırma (Amodei örneği, saç üstü): birefnet-portrait temiz; birefnet-general temiz ama gözlük camında arka plan sızıntısı; isnet-general-use hafif bulanık kenar; u2net_human_seg saçta belirgin açık halo (eski T8'deki kötü kırpmanın nedeni). Yüz hiçbir adımda yeniden çizilmez.
+
+## 12. Görsel yazısı ve post metni birbirini TAMAMLAR (v1.1.1, Doğukan onaylı 27 Kas 2026)
+Görselin üstündeki yazı ile post metni aynı cümleyi **asla** tekrar etmez.
+- **Post metni = kanca (hook):** güçlü, merak uyandıran, algoritma kurallarına uygun (ilk 280 karakter, tartışmaya açık iddia, soruyla bitirme yok). Görselde ne yazdığını anlatmaz.
+- **Görsel başlığı = bulgu / rakam / bağlam:** postun söylemediği şeyi ekler (sayı, karşılaştırma, kaynak, unvan, tarih).
+- Aynı cümle ya da aynı rakam-iddia ikilisi iki yerde de varsa: görsel başlığını değiştir.
+- Kontrol (yayından önce): postu ve görsel başlığını yan yana oku. Biri diğerinin kopyası ya da yeniden ifadesiyse yeniden yaz.
+- (Aşağıdaki örnekler kurgusaldır, gerçek veri değildir.)
+- **İyi:** Post: "Frontier laboratuvarlarından biri sessizce fiyatı yarıya indirdi. Rakipler bunu henüz fark etmedi." Görsel başlığı (T5): "1M token: $5 → $2,5" + bağlam satırı "Resmi fiyat sayfası, 27 Kas 2026".
+- **Kötü:** Post: "DeepSeek yeni modelini duyurdu, fiyat yarıya indi." Görsel başlığı: "DeepSeek yeni modelini duyurdu, fiyat yarıya indi". Aynı cümle iki kez, görsel hiçbir şey eklemiyor.
+- T8 için: görsel başlığı kişinin söylediği şeyin özü + unvan; post metni, o sözün neden önemli olduğuna dair kanca.

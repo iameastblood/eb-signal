@@ -306,20 +306,59 @@ def _fetch(path_or_url):
         open(cache, "wb").write(urllib.request.urlopen(req, timeout=60).read())
     return cache
 
-def cutout_person(path, max_side=1600):
-    """Real photo -> RGBA cutout via rembg (u2net_human_seg). Returns (img, method).
-    Fallback (rembg/onnx missing or fails): the photo in a rounded, feathered frame. The face is NEVER regenerated."""
-    im = Image.open(path).convert("RGB"); im.thumbnail((max_side, max_side), Image.LANCZOS)
+MATTING_CHAIN = ["birefnet-portrait", "birefnet-general", "isnet-general-use", "u2net_human_seg"]
+# model download sizes (rembg, one-time, ~/.rembg/models): birefnet-portrait ~928 MB, birefnet-general ~928 MB,
+# isnet-general-use ~170 MB, u2net_human_seg ~168 MB. CPU time on a 1600px photo: ~60 s / ~30 s / ~5 s / ~1 s (first run adds download).
+
+def _decontaminate(rgb_img, alpha_img):
+    """Remove background colour bleed on the edge (light halo): estimate true foreground colour under soft alpha."""
+    try:
+        from pymatting import estimate_foreground_ml
+        im = np.asarray(rgb_img).astype(np.float64)/255; al = np.asarray(alpha_img).astype(np.float64)/255
+        fg = estimate_foreground_ml(im, al)
+        return Image.fromarray((np.clip(fg, 0, 1)*255).astype(np.uint8))
+    except Exception:
+        return rgb_img
+
+def cutout_person(path, max_side=1600, precut=None, model=None):
+    """Real photo -> (RGBA cutout, method). Order of preference:
+       1. `precut` = an already cut-out RGBA PNG (path/URL) made by any other AI tool -> used as is (only edge refinement after).
+       2. `person` itself is a PNG with real transparency -> used as is.
+       3. rembg chain (best first): birefnet-portrait > birefnet-general > isnet-general-use (+alpha matting) > u2net_human_seg.
+          Force one with model=... or env EB_MATTING_MODEL. Result cached in tmp (re-renders are instant).
+       4. rembg/onnx unusable -> the photo in a rounded, feathered frame.
+    The face is NEVER regenerated or repainted; only cut, edge-cleaned and colour-graded."""
+    if precut:
+        pc = Image.open(_fetch(precut)).convert("RGBA")
+        if pc.getchannel("A").getextrema()[0] == 255: print("UYARI: precut PNG şeffaf değil")
+        return pc, "precut"
+    im0 = Image.open(path)
+    if im0.mode in ("RGBA", "LA") and im0.getchannel("A").getextrema()[0] < 250: return im0.convert("RGBA"), "png-alpha"
+    im = im0.convert("RGB"); im.thumbnail((max_side, max_side), Image.LANCZOS)
+    chain = [model or os.environ.get("EB_MATTING_MODEL")] if (model or os.environ.get("EB_MATTING_MODEL")) else MATTING_CHAIN
     try:
         from rembg import remove, new_session
-        out = remove(im, session=new_session("u2net_human_seg")).convert("RGBA")
-        if out.getchannel("A").getbbox() is None: raise RuntimeError("empty mask")
-        return out, "rembg"
     except Exception as e:  # noqa
-        print("UYARI: rembg yok/başarısız, yumuşak kenarlı çerçeve kullanılıyor:", type(e).__name__)
-        rgba = im.convert("RGBA"); m = Image.new("L", rgba.size, 0)
-        ImageDraw.Draw(m).rounded_rectangle([0, 0, rgba.width-1, rgba.height-1], radius=int(min(rgba.size)*0.06), fill=255)
-        rgba.putalpha(m.filter(ImageFilter.GaussianBlur(max(2, min(rgba.size)//60)))); return rgba, "frame"
+        remove = None; print("UYARI: rembg yok:", type(e).__name__)
+    if remove:
+        key = hashlib.md5((open(path, "rb").read() if os.path.exists(path) else path.encode())[:2000000]).hexdigest()
+        for m in chain:
+            cache = os.path.join(tempfile.gettempdir(), f"ebsignal_cut_{key}_{m}.png")
+            try:
+                if os.path.exists(cache): out = Image.open(cache).convert("RGBA")
+                else:
+                    out = remove(im, session=new_session(m), alpha_matting=(m == "isnet-general-use"),
+                                 alpha_matting_foreground_threshold=240, alpha_matting_background_threshold=15,
+                                 alpha_matting_erode_size=8).convert("RGBA")
+                    out.save(cache)
+                if out.getchannel("A").getbbox() is None: raise RuntimeError("empty mask")
+                return out, m
+            except Exception as e:  # noqa
+                print(f"UYARI: {m} başarısız ({type(e).__name__}), sıradaki model deneniyor")
+    print("UYARI: hiçbir matting modeli çalışmadı, yumuşak kenarlı çerçeve kullanılıyor")
+    rgba = im.convert("RGBA"); m = Image.new("L", rgba.size, 0)
+    ImageDraw.Draw(m).rounded_rectangle([0, 0, rgba.width-1, rgba.height-1], radius=int(min(rgba.size)*0.06), fill=255)
+    rgba.putalpha(m.filter(ImageFilter.GaussianBlur(max(2, min(rgba.size)//60)))); return rgba, "frame"
 
 def _cover(im, size):
     r = max(size[0]/im.width, size[1]/im.height); im = im.resize((int(im.width*r)+1, int(im.height*r)+1), Image.LANCZOS)
@@ -341,29 +380,52 @@ def t8(d, out):
     ov = Image.new("RGBA", cv.im.size, hx(C['bg'])); ov.putalpha(Image.fromarray(np.repeat((fade*215)[None, :], CH, 0).astype(np.uint8)))
     cv.im.alpha_composite(ov)
     cv.glow(1320, 760, 420, C['ember'], 70)
-    # --- person: cutout, grade, rim glow
-    cut, method = cutout_person(_fetch(d["person"]))
-    bb = cut.getchannel("A").point(lambda v: 255 if v > 24 else 0).getbbox(); cut = cut.crop(bb)
-    keep = float(d.get("person_crop_bottom", 0.80))            # keep top share of the cutout (bust)
-    cut = cut.crop((0, 0, cut.width, int(cut.height*keep)))
-    ph = int(S*(H-60)); pw = int(cut.width*ph/cut.height)
-    if pw > S*W*0.46: pw = int(S*W*0.46); ph = int(cut.height*pw/cut.width)
+    # --- person: AI matting -> edge refine -> colour match -> light wrap -> soft shadow -> alpha-following rim glow
+    cut, method = cutout_person(_fetch(d["person"]) if d.get("person") else None, precut=d.get("person_cutout"), model=d.get("matting_model"))
+    al = cut.getchannel("A"); bb = al.point(lambda v: 255 if v > 24 else 0).getbbox(); cut = cut.crop(bb)
+    W0, H0 = cut.size
+    # which sides of the photo frame cut the body (not the real silhouette): those get faded, never glowed or outlined
+    A0 = np.asarray(cut.getchannel("A")).astype(np.float32)/255
+    touch_l = A0[:, :3].mean() > 0.25; touch_r = A0[:, -3:].mean() > 0.25
+    keep = float(d.get("person_crop_bottom", 0.66))
+    cut = cut.crop((0, 0, W0, int(H0*keep))); H0 = cut.height
+    ph = int(S*(H-50)); pw = int(W0*ph/H0)
+    if pw > S*W*0.46: pw = int(S*W*0.46); ph = int(H0*pw/W0)
     cut = cut.resize((pw, ph), Image.LANCZOS)
+    rgb_i = _decontaminate(cut.convert("RGB"), cut.getchannel("A")) if method != "frame" else cut.convert("RGB")
     a = np.asarray(cut.getchannel("A")).astype(np.float32)/255
-    a = np.asarray(Image.fromarray((a*255).astype(np.uint8)).filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(S*0.8))).astype(np.float32)/255  # erode halo + soften edge
-    rgb = np.asarray(cut.convert("RGB")).astype(np.float32)/255; l = rgb.mean(axis=2, keepdims=True)
-    rgb = l + (rgb-l)*0.90                                   # slight desaturation
-    rgb = np.clip((rgb-0.5)*1.06+0.5, 0, 1)*np.array([0.97, 0.98, 1.0])
-    yy = np.linspace(0, 1, ph)[:, None, None]; rgb = rgb*(1-0.10*yy)   # gentle darkening to the bottom
-    xx = np.linspace(0, 1, pw)[None, :, None]; rgb = np.clip(rgb+np.array([0.10, 0.025, 0.0])*(xx**2.2), 0, 1)  # warm ember light on the right edge
-    fadeb = np.clip((1-np.linspace(0, 1, ph))/0.20, 0, 1)    # bottom 20% fades into the scene
-    a = a*fadeb[:, None]
-    edge = np.clip(np.linspace(0, 1, pw)/0.10, 0, 1); a = a*edge[None, :]   # soften the hard crop edge on the left of the photo
+    # edge refinement: tighten the matte a little (kills the faint halo), then 1px soften; contrast curve on the soft band
+    a_img = Image.fromarray((a*255).astype(np.uint8)).filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(S*0.7))
+    a = np.asarray(a_img).astype(np.float32)/255; a = np.clip((a-0.06)/0.88, 0, 1); a = a*a*(3-2*a)
+    # frame-cut sides: fade out smoothly so no straight panel edge is visible
+    xs_ = np.linspace(0, 1, pw)[None, :]; ys_ = np.linspace(0, 1, ph)[:, None]
+    a = a*np.clip((1-ys_)/0.24, 0, 1)                                   # bottom always melts into the scene
+    if touch_l: a = a*np.clip(xs_/0.16, 0, 1)
+    if touch_r: a = a*np.clip((1-xs_)/0.16, 0, 1)
     px_, py_ = CW-pw-int(S*10), CH-ph
-    glow = Image.fromarray((a*255).astype(np.uint8)).filter(ImageFilter.MaxFilter(7)).filter(ImageFilter.GaussianBlur(S*14))
-    ga = Image.new("RGBA", cut.size, hx(C['ember'])); ga.putalpha(glow.point(lambda v: int(v*0.42)))
-    cv.im.alpha_composite(ga, (px_, py_))
-    person = Image.fromarray((rgb*255).astype(np.uint8)).convert("RGBA"); person.putalpha(Image.fromarray((a*255).astype(np.uint8)))
+    region = cv.im.crop((px_, py_, px_+pw, py_+ph))
+    bgblur = np.asarray(region.convert("RGB").filter(ImageFilter.GaussianBlur(S*30))).astype(np.float32)/255
+    rgb = np.asarray(rgb_i).astype(np.float32)/255; l = rgb.mean(axis=2, keepdims=True)
+    rgb = l+(rgb-l)*0.90; rgb = np.clip((rgb-0.5)*1.05+0.5, 0, 1)*np.array([0.97, 0.98, 1.0])    # grade (face untouched otherwise)
+    fgm = (rgb*a[..., None]).sum((0, 1))/max(a.sum(), 1); bgm = bgblur.reshape(-1, 3).mean(0)
+    rgb = np.clip(rgb+(bgm-fgm)*0.18, 0, 1)                                                        # colour match to the scene
+    xx = xs_[..., None]; rgb = np.clip(rgb+np.array([0.10, 0.025, 0.0])*(xx**2.2), 0, 1)            # warm ember light from the right
+    inner = np.asarray(Image.fromarray((a*255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(S*9))).astype(np.float32)/255
+    band = np.clip(1-inner, 0, 1)*a                                                                 # thin zone just inside the silhouette
+    rgb = rgb*(1-0.45*band[..., None])+bgblur*0.45*band[..., None]*1.15                              # light wrap from the scene
+    ember = np.array(hx(C['ember'])[:3], dtype=np.float32)/255
+    rgb = np.clip(rgb+ember*(band*np.clip(xs_*1.2, 0, 1))[..., None]*0.35, 0, 1)                    # ember rim kiss on the right edges
+    A_img = Image.fromarray((a*255).astype(np.uint8))
+    pad = int(S*60); big = (pw+2*pad, ph+2*pad)
+    def padded(im_): c_ = Image.new("L", big, 0); c_.paste(im_, (pad, pad)); return c_
+    Ap = padded(A_img)
+    shadow = Ap.filter(ImageFilter.GaussianBlur(S*26)).point(lambda v: int(v*0.60))                  # soft contact shadow
+    sh = Image.new("RGBA", big, (0, 0, 0, 0)); sh.putalpha(shadow)
+    cv.im.alpha_composite(sh, (px_-pad-int(S*22), py_-pad+int(S*10)))
+    glow = Ap.filter(ImageFilter.MaxFilter(5)).filter(ImageFilter.GaussianBlur(S*16)).point(lambda v: int(v*0.38))   # follows the matte, not a box
+    gl = Image.new("RGBA", big, hx(C['ember'])); gl.putalpha(glow)
+    cv.im.alpha_composite(gl, (px_-pad, py_-pad))
+    person = Image.fromarray((rgb*255).astype(np.uint8)).convert("RGBA"); person.putalpha(A_img)
     cv.im.alpha_composite(person, (px_, py_))
     # --- text (code only)
     top(cv, d.get("tag", "KİŞİ"), stamp_of(d))
