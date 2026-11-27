@@ -25,6 +25,26 @@ LOBE = Path("/home/ubuntu/src/lobe/package/icons")
 TARGET = 512
 RENDER = 2048
 
+# Beyaz sürüm kararı tek yerde verilsin: make_white.py ile aynı kurallar.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+try:
+    from make_white import legible, read_list, read_manual_skips
+except Exception:  # make_white yoksa eski davranış
+    legible = lambda im: True
+    read_list = lambda p: set()
+    read_manual_skips = lambda p: set()
+
+_TOOLS = Path(__file__).resolve().parent
+
+
+def white_allowed(slug: str, im: Image.Image) -> bool:
+    """Elle atlananlar ve okunmaz silüetler için beyaz sürüm üretilmez."""
+    if slug in read_manual_skips(_TOOLS / "white_skip.txt"):
+        return False
+    if slug in read_list(_TOOLS / "white_force.txt"):
+        return True
+    return legible(im)
+
 
 def lobe_path(name: str):
     """Renkli sürümü tercih et, yoksa mono."""
@@ -145,7 +165,7 @@ def build_one(entry, outdir: Path, write_white=True):
         im = round_corners(im)
     errs = check(im, slug)
     im.save(outdir / f"{slug}.png", optimize=True)
-    if write_white and not opaque:
+    if write_white and not opaque and white_allowed(slug, im):
         white_silhouette(im).save(outdir / f"{slug}-white.png", optimize=True)
     return {"slug": slug, "size": im.size, "errors": errs, "source": url, "srcname": srcname}
 
