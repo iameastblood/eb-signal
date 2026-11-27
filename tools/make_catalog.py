@@ -159,6 +159,51 @@ T = [
     ("wandb", "Weights & Biases", "wandb", "wordmark", "lobe:wandb"),
 ]
 
+# Kişisel ajanlar: kaynak çoğunlukla ürünün kendi sitesi. App ikonu kareleri
+# yuvarlatılır (round) ve opak kabul edilir; beyaz silüet üretilmez.
+EXTRA = [
+    {"slug": "antigravity", "name": "Antigravity", "brand": "google", "kind": "product",
+     "src": "file:tools/sources/antigravity.png"},
+    {"slug": "meta-muse", "name": "Meta Muse", "brand": "meta", "kind": "product",
+     "src": "lobe:muse"},
+    {"slug": "chatgpt-dots", "name": "ChatGPT Dots", "brand": "openai", "kind": "product",
+     "src": "file:tools/sources/dots.png"},
+    {"slug": "grok-bot", "name": "Grok Bot", "brand": "xai", "kind": "product",
+     "src": "lobe:grokbot"},
+    {"slug": "claude-duet", "name": "Claude Duet", "brand": "anthropic", "kind": "product",
+     "src": "url:https://claude.com/static/claude-duet/app-icon-flat.svg"},
+    {"slug": "manus-cue", "name": "Manus Cue", "brand": "manus", "kind": "product",
+     "src": "url:https://cue.im/assets/cue/favicon.svg"},
+    {"slug": "instinct", "name": "Instinct", "brand": "instinct", "kind": "product",
+     "src": "url:https://instinct.com/redesign/stickman.png"},
+    {"slug": "hark", "name": "Hark", "brand": "hark", "kind": "product",
+     "src": "url:https://hark.com/images/favicon-dark.png"},
+    {"slug": "poke", "name": "Poke", "brand": "poke", "kind": "product",
+     "src": "url:https://poke.com/icons/poke-512.png", "opaque": True, "round": True},
+    {"slug": "fo", "name": "Fo (Wajo)", "brand": "wajo", "kind": "product",
+     "src": "url:https://wajo.ai/favicon.svg", "opaque": True, "round": True},
+    {"slug": "wabi", "name": "Wabi", "brand": "wabi", "kind": "product",
+     "src": "url:https://wabi.ai/icon0.svg"},
+    {"slug": "sharick", "name": "Sharick", "brand": "sharick", "kind": "product",
+     "src": "url:https://sharick.ai/favicon.svg"},
+    {"slug": "pally", "name": "Pally", "brand": "pally", "kind": "product",
+     "src": "url:https://pally.com/brand/app-icon.png"},
+    {"slug": "rene", "name": "Rene", "brand": "rene", "kind": "product",
+     "src": "url:https://rene.co/icon.svg"},
+    {"slug": "town", "name": "Town", "brand": "town", "kind": "product",
+     "src": "url:https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/f6/7a/15/f67a1512-90af-4401-b349-c62dfaf9cce9/AppIcon-0-0-1x_U007ephone-0-1-0-sRGB-85-220.png/512x512bb.jpg",
+     "opaque": True, "round": True},
+    {"slug": "ambi", "name": "Ambi (Mistlabs)", "brand": "ambi", "kind": "product",
+     "src": "url:https://ambi.ai/images/ambi-logo.svg"},
+    {"slug": "persona", "name": "Persona", "brand": "persona", "kind": "product",
+     "src": "url:https://yourpersona.com/img/favicon.svg"},
+    {"slug": "pickle", "name": "Pickle", "brand": "pickle", "kind": "product",
+     "src": "url:https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/2c/da/3b/2cda3bfe-977f-e819-6bda-24840f325dc2/AppIcon-0-0-1x_U007ephone-0-0-0-1-0-0-sRGB-85-220.png/512x512bb.jpg",
+     "opaque": True, "round": True},
+    {"slug": "underdog", "name": "Underdog", "brand": "underdog", "kind": "product",
+     "src": "url:https://underdog.ai/icon.png"},
+]
+
 
 def main():
     out, missing, seen = [], [], set()
@@ -174,6 +219,12 @@ def main():
         if not any((LOBE / c).exists() for c in cands):
             missing.append((slug, val))
         out.append({"slug": slug, "name": name, "brand": brand, "kind": kind, "src": src})
+    for e in EXTRA:
+        if e["slug"] in seen:
+            print("MÜKERRER:", e["slug"]); continue
+        seen.add(e["slug"])
+        out.append(e)
+
     Path("tools/logo_catalog.json").write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n")
     print(f"{len(out)} kayıt yazıldı")
     if missing:

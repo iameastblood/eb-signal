@@ -65,10 +65,15 @@ karo içinde kullanılır.
 - `bedrock.png` + beyaz · Amazon Bedrock (product)
 - `nova.png` · Amazon Nova (product)
 
+### Ambi (Mistlabs)  ·  marka: `ambi`
+
+- `ambi.png` + beyaz · Ambi (Mistlabs) (product)
+
 ### Anthropic  ·  marka: `anthropic`
 
 - `anthropic-symbol.png` + beyaz · Anthropic (işaret) (symbol)
 - `claude-code.png` + beyaz · Claude Code (product)
+- `claude-duet.png` · Claude Duet (product)
 - `mcp.png` + beyaz · Model Context Protocol (product)
 
 ### AssemblyAI  ·  marka: `assemblyai`
@@ -210,6 +215,10 @@ karo içinde kullanılır.
 
 - `groq.png` + beyaz · Groq (wordmark)
 
+### Hark  ·  marka: `hark`
+
+- `hark.png` + beyaz · Hark (product)
+
 ### Hyperbolic  ·  marka: `hyperbolic`
 
 - `hyperbolic.png` + beyaz · Hyperbolic (wordmark)
@@ -225,6 +234,10 @@ karo içinde kullanılır.
 ### Inflection AI  ·  marka: `inflection`
 
 - `inflection.png` + beyaz · Inflection AI (wordmark)
+
+### Instinct  ·  marka: `instinct`
+
+- `instinct.png` · Instinct (product)
 
 ### JetBrains  ·  marka: `jetbrains`
 
@@ -286,10 +299,12 @@ karo içinde kullanılır.
 ### Manus  ·  marka: `manus`
 
 - `manus.png` + beyaz · Manus (product)
+- `manus-cue.png` · Manus Cue (product)
 
 ### Meta  ·  marka: `meta`
 
 - `meta-ai.png` + beyaz · Meta AI (product)
+- `meta-muse.png` + beyaz · Meta Muse (product)
 
 ### Microsoft  ·  marka: `microsoft`
 
@@ -339,6 +354,7 @@ karo içinde kullanılır.
 
 ### OpenAI  ·  marka: `openai`
 
+- `chatgpt-dots.png` + beyaz · ChatGPT Dots (product)
 - `codex.png` · Codex (product)
 - `dall-e.png` · DALL·E (product)
 - `sora.png` · Sora (product)
@@ -355,9 +371,25 @@ karo içinde kullanılır.
 
 - `openrouter.png` + beyaz · OpenRouter (wordmark)
 
+### Pally  ·  marka: `pally`
+
+- `pally.png` · Pally (product)
+
+### Persona  ·  marka: `persona`
+
+- `persona.png` + beyaz · Persona (product)
+
+### Pickle  ·  marka: `pickle`
+
+- `pickle.png` · Pickle (product)
+
 ### Pika  ·  marka: `pika`
 
 - `pika.png` + beyaz · Pika (wordmark)
+
+### Poke  ·  marka: `poke`
+
+- `poke.png` · Poke (product)
 
 ### Poolside  ·  marka: `poolside`
 
@@ -370,6 +402,10 @@ karo içinde kullanılır.
 ### Reka AI  ·  marka: `reka`
 
 - `reka.png` + beyaz · Reka AI (wordmark)
+
+### Rene  ·  marka: `rene`
+
+- `rene.png` + beyaz · Rene (product)
 
 ### Replicate  ·  marka: `replicate`
 
@@ -402,6 +438,10 @@ karo içinde kullanılır.
 ### SenseNova  ·  marka: `sensenova`
 
 - `sensenova.png` + beyaz · SenseNova (wordmark)
+
+### Sharick  ·  marka: `sharick`
+
+- `sharick.png` · Sharick (product)
 
 ### Snowflake  ·  marka: `snowflake`
 
@@ -436,9 +476,17 @@ karo içinde kullanılır.
 
 - `together.png` + beyaz · Together AI (wordmark)
 
+### Town  ·  marka: `town`
+
+- `town.png` · Town (product)
+
 ### Udio  ·  marka: `udio`
 
 - `udio.png` + beyaz · Udio (wordmark)
+
+### Underdog  ·  marka: `underdog`
+
+- `underdog.png` · Underdog (product)
 
 ### Upstage  ·  marka: `upstage`
 
@@ -457,6 +505,14 @@ karo içinde kullanılır.
 
 - `vllm.png` + beyaz · vLLM (product)
 
+### Wabi  ·  marka: `wabi`
+
+- `wabi.png` + beyaz · Wabi (product)
+
+### Wajo (Fo)  ·  marka: `wajo`
+
+- `fo.png` · Fo (Wajo) (product)
+
 ### Weights & Biases  ·  marka: `wandb`
 
 - `wandb.png` + beyaz · Weights & Biases (wordmark)
@@ -464,10 +520,11 @@ karo içinde kullanılır.
 ### xAI  ·  marka: `xai`
 
 - `grok.png` + beyaz · Grok (symbol)
+- `grok-bot.png` · Grok Bot (product)
 
 ### Zhipu AI  ·  marka: `zhipu`
 
 - `chatglm.png` + beyaz · GLM (Zhipu) (product)
 
 
-Toplam **143** logo, **135** beyaz sürüm.
+Toplam **161** logo, **142** beyaz sürüm.

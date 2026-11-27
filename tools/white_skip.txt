@@ -1,0 +1,20 @@
+# Beyaz sürümü üretilmeyen logolar (otomatik + elle)
+antigravity
+claude-duet
+codex
+dall-e
+fo
+gemini-cli
+grok-bot
+instinct
+kiro
+manus-cue
+nova
+pally
+pickle
+poke
+sharick
+sora
+town
+underdog
+zai

@@ -34,6 +34,10 @@ BRAND_TR = {
     "assemblyai": "AssemblyAI", "fal": "fal.ai", "novita": "Novita AI",
     "hyperbolic": "Hyperbolic", "nebius": "Nebius", "baseten": "Baseten", "vllm": "vLLM",
     "langfuse": "Langfuse", "wandb": "Weights & Biases",
+    "instinct": "Instinct", "hark": "Hark", "poke": "Poke", "wajo": "Wajo (Fo)",
+    "wabi": "Wabi", "sharick": "Sharick", "pally": "Pally", "rene": "Rene",
+    "town": "Town", "ambi": "Ambi (Mistlabs)", "persona": "Persona",
+    "pickle": "Pickle", "underdog": "Underdog",
 }
 
 HEAD = """# logos/ · EB SIGNAL logo kütüphanesi

@@ -16,7 +16,7 @@ import json, os, re, sys, io, subprocess, urllib.request, hashlib
 from pathlib import Path
 
 import cairosvg
-from PIL import Image
+from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
 LOGOS = ROOT / "logos"
@@ -55,7 +55,7 @@ def fetch(url: str) -> bytes:
 
 def svg_to_rgba(data: bytes, is_svg=True) -> Image.Image:
     if is_svg:
-        png = cairosvg.svg2png(bytestring=data, output_width=RENDER, output_height=RENDER)
+        png = cairosvg.svg2png(bytestring=data, output_width=RENDER)
         return Image.open(io.BytesIO(png)).convert("RGBA")
     return Image.open(io.BytesIO(data)).convert("RGBA")
 
@@ -70,7 +70,7 @@ def trim(im: Image.Image) -> Image.Image:
 def fit(im: Image.Image, target=TARGET) -> Image.Image:
     w, h = im.size
     scale = target / max(w, h)
-    if scale < 1:
+    if scale != 1:
         im = im.resize((max(1, round(w * scale)), max(1, round(h * scale))), Image.LANCZOS)
     return im
 
@@ -83,6 +83,15 @@ def white_silhouette(im: Image.Image) -> Image.Image:
     solid.putalpha(alpha)
     return solid
 
+def round_corners(im: Image.Image, ratio=0.225) -> Image.Image:
+    """App ikonu karelerini yuvarlat: köşe dışı tam şeffaf olur."""
+    w, h = im.size
+    r = int(min(w, h) * ratio)
+    mask = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0, 0, w - 1, h - 1], radius=r, fill=255)
+    out = im.copy()
+    out.putalpha(Image.composite(im.getchannel("A"), Image.new("L", (w, h), 0), mask))
+    return out
 
 def check(im: Image.Image, slug: str) -> list:
     errs = []
@@ -128,12 +137,15 @@ def build_one(entry, outdir: Path, write_white=True):
     slug = entry["slug"]
     data, is_svg, url, srcname = resolve(entry["src"])
     im = svg_to_rgba(data, is_svg)
-    if im.getchannel("A").getextrema() == (255, 255):
+    opaque = entry.get("opaque", False)
+    if not opaque and im.getchannel("A").getextrema() == (255, 255):
         raise ValueError("kaynak opak (şeffaflık yok)")
     im = fit(trim(im))
+    if entry.get("round"):
+        im = round_corners(im)
     errs = check(im, slug)
     im.save(outdir / f"{slug}.png", optimize=True)
-    if write_white:
+    if write_white and not opaque:
         white_silhouette(im).save(outdir / f"{slug}-white.png", optimize=True)
     return {"slug": slug, "size": im.size, "errors": errs, "source": url, "srcname": srcname}
 

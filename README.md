@@ -28,7 +28,7 @@ python add_logo.py --src https://.../logo.png --slug claude-code --name "Claude 
 
 ## Değişmez kurallar
 - Logo sadece `logos/` klasöründen (logos.csv). Yapay zekâ ile logo **asla** çizilmez.
-- Logo kütüphanesi: 143 logo, 94 marka, koyu zemin için `-white` sürümleri. Dizin ve yeni logo ekleme protokolü: **logos/README.md**. Üretim araçları: `tools/`.
+- Logo kütüphanesi: 161 logo, 107 marka, koyu zemin için `-white` sürümleri. Dizin ve yeni logo ekleme protokolü: **logos/README.md**. Üretim araçları: `tools/`.
 - Yapay zekâ sadece arka plan üretir (spec'teki tarif). Yazı, logo, şekil kodla basılır.
 - Rakam uydurulmaz. Kaynak satırı görselin içinde. `@eastblood_tr` alt ortada (render.py otomatik basar).
 - Em dash (—) yok. Başlık bir bulgu cümlesidir.
