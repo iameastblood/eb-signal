@@ -1,4 +1,4 @@
-# tools/video · EB SIGNAL video hattı (v1.2.0)
+# tools/video · EB SIGNAL video hattı (v1.3.0)
 
 Resmi bir şirket videosunu (kaynak) alır; Türkçe Cartesia seslendirmesi, yakalanmış İngilizce altyazı, müzik ve HyperFrames hareket katmanıyla `@eastblood_tr` videosuna çevirir. **Hiçbir yere yayınlamaz.** Çıktı: `final.mp4` + 3 kare PNG + `report.json`.
 
@@ -18,17 +18,25 @@ Anahtarlar yalnız ortam değişkeninden: `CARTESIA_API_KEY` (TTS), `ELEVENLABS_
 | `logo` | `logos/<slug>.png`; varsa `-white` sürümü seçilir. Logo yoksa `add_logo.py` ile ekle, çizme |
 | `genre` | `tech/finance/mystery/space/neutral` (müzik) |
 | `lines[]` | her satır = bir VO cümlesi: `tr_chunks` (virgülle bölünen Türkçe parçalar, TTS okunuşuyla), `en_chunks` (aynı sayıda, ekrana basılan İngilizce, parça başına max 2 satır), `src_start` (bu cümlenin ekranla eşleşeceği kaynak saniyesi) |
-| `comma_ms` / `period_ms` | virgül ve nokta için eklenen `<break>` süresi (varsayılan 200 / 480; ölçülen toplam duraklama virgülde ~0,5 sn, noktada ~0,75 sn) |
-| `speed`, `voice_id`, `model` | varsayılan 0.95, My Turkish Voice, sonic-3.6 |
+| `comma_ms` / `period_ms` | virgül ve nokta için eklenen `<break>` süresi (varsayılan 220 / 750; ölçülen toplam duraklama virgülde ~0,35 sn, noktada ~1,0 sn) |
+| `speed`, `voice_id`, `model` | varsayılan 0.94, My Turkish Voice, sonic-3.6 |
 | `lead`, `tail` | VO'dan önce 0,5 sn, sonra 1,2 sn; `sub_font_px` 41 |
 
 ## Ne yapar (sıra)
-1. Kaynak indirilir. 2. TTS metni kurulur (kural denetimi: em dash, @, `[...]`, mojibake, rakam uyarısı). Virgüle `<break 200ms>`, noktaya `<break 480ms>`. VO üretilir (tek istek, doğal prozodi). 3. VO'daki sessizlikler ölçülür: en uzun N-1 sessizlik cümle sınırı, satır içi en uzunlar virgül sınırı. Altyazı ve görüntü bu zamanlara bağlanır, Whisper gerekmez (`--qa` ile geri dinleme dosyası). 4. **Senkron:** her cümle için kaynakta `src_start` (ya da önceki kesimin bittiği yer, hangisi geçse) noktasından o cümlenin VO süresi kadar görüntü kesilir; kesimler konuşmanın boşluk ortasındadır; VO hiç kesilip yapıştırılmaz. 5. Ses: VO -16 LUFS (sıkıştırıcı yok, linear loudnorm + alimiter), müzik -36 LUFS (VO'nun ~20 dB altı), orijinal ses tamamen kapalı. 6. HyperFrames projesi üretilir (`out/hf/`): başlık kartı, altyazılar, filigran; `render` ile MP4. 7. Ses VO+müzik karışımıyla mux, 3 kare.
+1. Kaynak indirilir. 2. TTS metni kurulur (kural denetimi: em dash, @, `[...]`, mojibake, rakam ve kısaltma uyarısı). Virgüle `<break 220ms>`, noktaya `<break 750ms>`. VO üretilir (tek istek, doğal prozodi). 3. VO'daki sessizlikler ölçülür: en uzun N-1 sessizlik cümle sınırı, satır içi en uzunlar virgül sınırı. Altyazı ve görüntü bu zamanlara bağlanır, Whisper gerekmez (`--qa` ile geri dinleme dosyası). 4. **Senkron:** her cümle için kaynakta `src_start` (ya da önceki kesimin bittiği yer, hangisi geçse) noktasından o cümlenin VO süresi kadar görüntü kesilir; kesimler konuşmanın boşluk ortasındadır; VO hiç kesilip yapıştırılmaz. 5. Ses: VO -16 LUFS (sıkıştırıcı yok, linear loudnorm + alimiter), müzik -36 LUFS (VO'nun ~20 dB altı), orijinal ses tamamen kapalı. 6. HyperFrames projesi üretilir (`out/hf/`): başlık kartı, altyazılar, filigran; `render` ile MP4. 7. Ses VO+müzik karışımıyla mux, 3 kare.
 
 ## Görünüm (kural)
 - Altyazı **kutusuz**: Inter 700, ~41 px, ince koyu kontur + yumuşak gölge. İki satırı geçmez. Her altyazı kelime kelime blur+yükselme ile girer, blur ile çıkar.
 - Başlık kartı: panel soldan açılır, ember çubuk iner, logo yaylanarak gelir, başlık kelime kelime girer; çıkış hızlı blur+kayma.
 - Filigran `@eastblood_tr` alt orta: yumuşak giriş, ember çizgi, nabız atan nokta, ~9 sn'de bir ışık süpürmesi, sonda çıkış. Her zaman okunur (kontur), altyazı üstünde durur.
+
+## Dil ve okunuş (kural, 27 Kas 2026)
+- **Kısaltma hedef dilin harf adıyla yazılır.** Türkçe ses Latin kısaltmayı Türkçe harf adıyla okuyor: "Ge Pe Te" yazarsan seslendirme "ge pe te" der, video amatör durur. İngilizce okunan kısaltmalar İngilizce harf adıyla, Türkçe imlayla yazılır: GPT → **Ci Pi Ti**, AI → **Ey Ay**, API → **Ey Pi Ay**, LLM → **El El Em**, CPU → **Si Pi Yu**, GPU → **Ci Pi Yu**, CEO → **Si İ Ou**, X → **Eks**. Sürüm ve sayı Türkçe kalır: 6.2 → "altı nokta iki".
+- İngilizce harf adları (Türkçe imla): A Ey · B Bi · C Ci · D Di · E İ · F Ef · G Ci · H Eyç · I Ay · J Cey · K Key · L El · M Em · N En · O Ou · P Pi · Q Kyu · R Ar · S Es · T Ti · U Yu · V Vi · W Dabılyu · X Eks · Y Vay · Z Zi
+- **ASR doğrulaması tek başına yetmez:** model kısaltmayı normalize ediyor, "Ge Pe Te" de "Ci Pi Ti" de yazıya "GPT" olarak dökülüyor. Kısaltmalı cümle kulakla dinlenir.
+- **Duraklama ritmi:** cümle sonu `<break time="750ms"/>`, parça ve virgül arası `<break time="220ms"/>`, `speed` 0.94. Ölçülen sonuç: nokta sonları 0,93–1,02 sn, virgül araları 0,30–0,42 sn. Cümle sonu 500 ms altına düşerse akış üst üste biner, "her şeyi bir anda okuyor" hissi oluşur.
+- Liste okumaları tek parça bırakılır; her öğeyi ayrı `tr_chunks` yapmak duraklamaları yığıyor ve kesik duyuruyor.
+- Duraklamayı mix üzerinde değil VO dosyasında ölç, müzik eşiği bozuyor: `ffmpeg -i vo.wav -af silencedetect=noise=-40dB:d=0.18 -f null -`
 
 ## Ortam
 Python 3.10+ (`requests`, isteğe bağlı `faster-whisper`), `ffmpeg` (libx264, aac), Node 20+ ve Chrome (HyperFrames; ilk çalıştırmada `npx hyperframes@0.9.99` iner), yt-dlp (URL kaynağı). HyperFrames komutu: `HF_CMD="npx --yes hyperframes@0.9.99"` (varsayılan) ya da `--hf-cmd`. GSAP CDN'den yüklenir (ağ gerekir). Render ~65 sn / 45 sn video (8 çekirdek), tüm hat ~100 sn.

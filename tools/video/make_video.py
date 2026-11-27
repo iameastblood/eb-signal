@@ -39,7 +39,7 @@ def dur(path):
 
 # ---------------------------------------------------------------- script / TTS text
 def build_tts_text(job):
-    comma = job.get("comma_ms", 200); period = job.get("period_ms", 480)
+    comma = job.get("comma_ms", 220); period = job.get("period_ms", 750)
     out = []
     for i, ln in enumerate(job["lines"]):
         ch = [c.strip().rstrip(",.") for c in ln["tr_chunks"]]
@@ -58,6 +58,11 @@ def preflight(text, job):
     bad = [m for m in ["—", "–", "…", "...", "[", "]", "(", ")", "%", "&", "@", "http", "Ã", "Ä", "Å", "**"] if m in plain]
     if bad: raise SystemExit(f"TTS metni kural ihlali (Notion Cartesia kurali): {bad}")
     if re.search(r"\d", plain): print("UYARI: TTS metninde rakam var; yil disinda yaziyla yaz (kural 7)")
+    # kisaltma okunusu: harf adi hedef dilde yazilir (GPT -> Ci Pi Ti); Turkce harf adi yasak
+    if re.search(r"\bge pe te\b", plain, re.I):
+        raise SystemExit("kisaltma Turkce harf adiyla yazilmis: GPT -> Ci Pi Ti (README: Dil ve okunus)")
+    abbr = sorted(set(re.findall(r"\b[A-Z]{2,}\b", plain)))
+    if abbr: print("UYARI: kisaltma harf harf yazilmali (or. GPT -> Ci Pi Ti):", abbr)
     for ln in job["lines"]:
         if len(ln["tr_chunks"]) != len(ln["en_chunks"]):
             raise SystemExit("tr_chunks ve en_chunks sayisi esit olmali (altyazi her TR parcayi izler)")
@@ -75,7 +80,7 @@ def cartesia_tts(text, job, out):
             "voice": {"mode": "id", "id": job.get("voice_id", "2bcc6ce6-7c85-40fb-a6cb-26fc8297c6d8")},
             "language": "tr",  # locale GONDERME (400 verir)
             "output_format": {"container": "wav", "encoding": "pcm_s16le", "sample_rate": 44100}}
-    sp = job.get("speed", 0.95)
+    sp = job.get("speed", 0.94)
     if sp != 1.0: body["generation_config"] = {"speed": sp}
     for attempt in range(4):
         r = requests.post("https://api.cartesia.ai/tts/bytes", json=body, timeout=180,
@@ -90,8 +95,8 @@ def cartesia_tts(text, job, out):
 
 # ---------------------------------------------------------------- timing from VO silences
 def silences(wav, noise=-38, d=0.12):
-    r = subprocess.run(["ffmpeg", "-hide_banner", "-i", wav, "-af", f"silencedetect=noise={noise}dB:d={d}", "-f", "null", "-"],
-                       capture_output=True, text=True).stderr
+    r = subprocess.run(["ffmpeg", "-nostdin", "-hide_banner", "-i", wav, "-af", f"silencedetect=noise={noise}dB:d={d}", "-f", "null", "-"],
+                       capture_output=True, text=True, stdin=subprocess.DEVNULL).stderr
     st = [float(x) for x in re.findall(r"silence_start: ([\d.]+)", r)]
     en = re.findall(r"silence_end: ([\d.]+) \| silence_duration: ([\d.]+)", r)
     return [(s, float(e), float(du)) for s, (e, du) in zip(st, en)]

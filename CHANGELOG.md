@@ -1,3 +1,9 @@
+## tools/video · 2026-11-27 (video hattı 1.3.0)
+- Kısaltma okunuşu kuralı: hedef dilin harf adı yazılır (GPT -> Ci Pi Ti). "Ge Pe Te" gibi Türkçe harf adı `preflight` tarafından reddedilir; büyük harfli kısaltma kalırsa uyarı verilir.
+- Duraklama ritmi: varsayılan `comma_ms` 220, `period_ms` 750, `speed` 0.94. Ölçülen: nokta sonu ~1,0 sn, virgül arası ~0,35 sn.
+- `silences()` artık `-nostdin` ve `stdin=DEVNULL` ile çalışır; terminalde ffmpeg takılması giderildi.
+- README'ye "Dil ve okunuş" bölümü eklendi (harf adı tablosu, ASR doğrulama tuzağı, ölçüm komutu).
+
 # CHANGELOG · EB SIGNAL
 
 Kural: her değişiklik VERSION'ı artırır. MAJOR = şablon yapısı/palet değişimi, MINOR = yeni şablon veya yeni alan, PATCH = ölçü/renk ince ayarı, logo ekleme.
