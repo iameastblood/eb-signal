@@ -1,10 +1,10 @@
-# EB SIGNAL · Spec v1.0 (VERSION 1.0.0)
+# EB SIGNAL · Spec v1.1 (VERSION 1.1.0)
 @eastblood_tr ortak görsel standardı. X Marabası, Manus, Orva görsel üretmeden önce bunu okur.
 Referans kod: `ebstyle.py` + `render.py`. Ölçüler mantıksal piksel (render 2x yapılıp küçültülür).
 
 ## 1. Değişmez kurallar
 1. Boyut her zaman **1600x900 (16:9)**. Başka oran yok.
-2. Şirket/lab/ürün varsa **gerçek logo** `logos/` klasöründen gelir (logos.csv). Logo yapay zekâ ile ASLA çizilmez, yeniden boyanmaz. Logo yoksa: harf karosu + şirket adı, ve logos.csv'ye eklenmesi için not düş.
+2. Şirket/lab/ürün varsa **gerçek logo** `logos/` klasöründen gelir (logos.csv). Logo yapay zekâ ile ASLA çizilmez, yeniden boyanmaz. Logo yoksa: **logoyu sen ekle** (bkz. 10. Logo kütüphanesi büyür); ekleyemezsen harf karosu + şirket adı ve Güncelleme Protokolü'ne not düş.
 3. Yapay zekâ sadece **arka plan** üretir (bkz. 6). Yazı, logo, şekil, filigran kodla (render.py) basılır.
 4. **Rakam uydurulmaz.** Her rakam resmi kaynaktan. Resmi veri yoksa grafik (T2/T3/T5) yapılmaz.
 5. **Kaynak satırı görselin içinde** (sol alt "Kaynak: ..."). render.py `source` ve `date` olmadan çalışmaz.
@@ -35,6 +35,7 @@ Okunacak hiçbir metin 22px altında olmaz.
 | T4 Sızıntı | X'ten sızıntı, iddia, ekran görüntüsü | Sol 600px: durum rozeti (DOĞRULANMADI/DOĞRULANDI), başlık 60px max 4 satır, max 3 madde; sağ: pencere çerçevesi x720-1528, ekran görüntüsü sığdırılır, `highlight_box` ember çerçeve | title, screenshot, handle, status, source, date (+points, highlight_box) |
 | T5 Büyük rakam | Tek rakam haberi taşıyor | Logo 88 @(72,140); rakam 250px ember (taşarsa küçülür); etiket 48px; bağlam 28px; sağda max 3 karşılaştırma kartı | number, label, logo, company, source, date (+context, compare, bg) |
 | T6 Alıntı | Kişi/kurum sözü | Ember tırnak 260px; alıntı 54px max 6 satır/1250px dikey ortalı; altında logo/avatar + ad + unvan. Kaynak URL post metninin sonunda | quote, name, source, date (+role, logo, highlight, bg) |
+| T8 Kişi kompoziti | Haber gerçek bir kişiyle ilgili (açıklama, röportaj, duyuru) | Sağda kişi kesiti (~%45 genişlik, ember kenar ışıması, alt %20 sahneye erir); koyuya çekilmiş konu zemini (`bg`); solda logo karosu 88, başlık 60px max 4 satır/720px, opsiyonel alıntı (ember çubuk, max 4 satır) ve sub (max 3 satır), altta kişi adı + unvan; kaynak satırı (+ "Foto: ..." kredisi) | person (yol/URL), person_name, headline, source, date (+bg, quote, sub, role, logo, company, highlight, photo_credit, person_crop_bottom) |
 
 **T3 metrik yönü (better):** higher = yüksek iyi (puan, bağlam, hız token/sn, doğruluk) · lower = düşük iyi (fiyat, gecikme, hata oranı, bellek, maliyet) · none = karşılaştırma yok. Etikete otomatik "(düşük iyi)" eklenir.
 
@@ -43,7 +44,7 @@ Okunacak hiçbir metin 22px altında olmaz.
 2. İki ürün/model yan yana, eşleşen metrikler -> **T3**
 3. Tek rakam haberin kendisi (fiyat, kullanıcı, %, gelir) -> **T5**
 4. X sızıntısı, iddia, ekran görüntüsü -> **T4** (doğrulanmadıysa status "Doğrulanmadı")
-5. Kişi/kurum alıntısı -> **T6**
+5. Kişi/kurum alıntısı -> **T6**; haber gerçek bir kişinin kendisiyle ilgiliyse (kişi fotoğrafı değer katıyorsa) -> **T8**
 6. Diğer şirket/ürün haberi -> **T1**
 7. Şirket yok, rakam yok -> görselsiz metin postu. Görsel şartsa T1 (logo alanında konunun baş harfiyle harf karosu, otomatik).
 Video kapakları da T1 düzeninde.
@@ -63,3 +64,23 @@ render.py `cikti.png` + `cikti.meta.json` (template, version) yazar. Görsele s�
 3. Güçlü hesaplardan 3-5 yeni referans tasarım `ilham/` + Notion "Tasarım İlhamı" tablosuna eklenir.
 4. En fazla 1-2 değişiklik önerilir. **A/B kuralı: aynı anda tek değişken** (ör. sadece başlık boyutu). Az veriyle (<5 post/şablon) karar verilmez.
 5. Doğukan onaylar -> kod değişir -> VERSION artar -> CHANGELOG.md'ye tarih, değişiklik, gerekçe (veri) yazılır.
+
+## 10. Logo kütüphanesi büyür (v1.1, Doğukan onaylı 27 Kas 2026)
+Haberdeki şirket/araç logosu `logos.csv`'de yoksa **üreten ajan** (X Marabası, Manus, Orva) ekler:
+1. Resmi logoyu bul: önce press kit / resmi site, sonra Wikimedia Commons. Yapay zekâ ile logo çizilmez.
+2. `python add_logo.py --src <URL|dosya> --slug <küçük-harf-slug> --name "Ad" --tags ai-lab,coding,agent,tool,chip,cloud --source <kaynak sayfa>`: düz zemini şeffaf yapar, kırpar, 512px'e getirir, #0A0C10 üzerinde kontrastı ölçer; koyu logo ise otomatik `slug-white.png` (beyaz silüet) üretir; `logos.csv`'ye satır ekler (kolonlar: slug,name,kind,svg_url,png_url,source_page,license,brand,white_png_url,tags). `--push` ile `git pull --rebase` + commit + push yapar.
+3. Logo koyu zeminde kaybolmamalı (#0A0C10). Görselde logo her zaman açık karoda (#F5F6F8) orijinal renkte basılır; karoda kaybolan çok açık logo için ana dosya koyu silüete çevrilir.
+4. Commit: `logo: <slug> eklendi`. Push öncesi her zaman `git pull --rebase`. **Başkasının logosunu ve logos.csv satırlarını asla silme, yeniden adlandırma ya da ezme** (araç var olan slug'ı reddeder).
+5. GitHub'a yazamıyorsan: eksik logoyu Notion **Güncelleme Protokolü**'ne (başlık "Logo eksik: <şirket>", kaynak linkiyle) yaz; başka bir ajan ekler. Post harf karosuyla yine çıkabilir.
+Toplu genişletme (şu an Manus) `tools/` ile yapılır; tek logoluk eklemeler `add_logo.py` iledir. Etiketler: ai-lab, coding, agent, tool, chip, cloud, model, app, framework, other.
+
+## 11. T8 Gerçek kişi kompoziti (v1.1, Doğukan onaylı 27 Kas 2026)
+Akış: (1) kişinin **gerçek** fotoğrafı (resmi basın fotoğrafı, şirket sitesi, Wikimedia Commons, güvenilir basın; lisans/kaynak not edilir) -> (2) arka plan otomatik kesilir (`rembg`, model u2net_human_seg; kurulu değilse fotoğraf yumuşak kenarlı yuvarlak çerçevede kullanılır) -> (3) konuya uygun zemin (gerçek fotoğraf ya da AI sahne, ör. veri merkezi; zemin koyuya çekilir, ember vurgu) -> (4) renk eşitleme: hafif desatürasyon, serin ton, sağ kenarda sıcak ember ışık, kenarda ince ember ışıma -> (5) yazılar EB SIGNAL fontlarıyla kodla, `@eastblood_tr` filigranı ve kaynak satırı.
+`python render.py t8 veri.json cikti.png` (örnek: examples/t8.json -> examples/T8.png).
+**Sert kurallar**
+- Kişinin yüzü **asla** yapay zekâ ile üretilmez veya değiştirilmez. Yalnız kesme, kırpma, renk eşitleme, ışık/kontrast. Yeniden çizme, yüz düzeltme, "AI portre" yasak.
+- **Sahte alıntı yok.** `quote` alanı yalnız kaynakta geçen sözdür; çeviriyse anlam değişmez. Kaynak `source` alanında.
+- Kişinin o mekanda **fiziksel olarak bulunduğu ima edilmez**: zemin açıkça tasarlanmış bir fondur (koyu, ember vurgu, kişi kesik ve ışımalı). Zeminde kişi/yüz olmaz.
+- Fotoğraf kaynağı biliniyorsa kaynak satırında kredi (`photo_credit`, ör. "Wikimedia Commons, CC BY 2.0"). CC BY lisanslı fotoğraflar kredisiz kullanılmaz.
+- Kişinin logosu/şirketi varsa `logos/` klasöründen (bölüm 10).
+- Örnek/sahte içerik `"example": true` damgalıdır, yayınlanmaz.

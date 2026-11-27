@@ -67,6 +67,11 @@ boyanmaz; yalnız resmi vektör kaynaktan üretilir.
 6. Görseli damalı zeminde gözle kontrol et. Bozuksa ekleme.
 7. Tek konu tek commit: `logo: <slug> eklendi` veya `logo: <slug> düzeltildi`.
 
+## Hızlı yol: tek logo (v1.1)
+
+Tek logo için `tools/` zinciri yerine: `python add_logo.py --src <URL|dosya> --slug <slug> --name "Ad" --tags <etiketler> --source <sayfa> [--push]`.
+Şeffaflık, kırpma, koyu zemin kontrolü, `-white` sürüm ve `logos.csv` satırını (tags dahil) otomatik yapar. Var olan slug'ı ezmez.
+
 ## Koyu zemin notu
 
 `-white.png` sürümü, logonun alfa kanalı korunarak beyaz doldurulmasıyla üretilir. İçi dolu

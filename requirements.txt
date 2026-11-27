@@ -1,2 +1,4 @@
 pillow>=10
 numpy
+rembg>=2.0   # T8 otomatik kesim (opsiyonel; yoksa çerçeve yedeği)
+onnxruntime       # rembg için

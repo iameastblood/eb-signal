@@ -1,0 +1,27 @@
+{
+ "template": "T8",
+ "cutout": "rembg",
+ "data": {
+  "tag": "CEO AÇIKLAMASI",
+  "example": "ÖRNEK İÇERİK",
+  "bg": "datacenter_01.jpg",
+  "person": "examples/amodei_2023.jpg",
+  "headline": "Anthropic CEO'su yapay zekâ altyapısı için yeni bir açıklama yaptı",
+  "highlight": "yeni bir açıklama",
+  "quote": "Bu alıntı yalnızca bir yerleşim örneğidir; gerçek kullanımda söz kaynağından birebir alınır.",
+  "company": "Anthropic",
+  "logo": "anthropic",
+  "person_name": "Dario Amodei",
+  "role": "CEO, Anthropic",
+  "photo_credit": "UK PM / Wikimedia, CC BY 2.0",
+  "source": "Örnek kaynak",
+  "date": "27 Kas 2026"
+ },
+ "style": "EB SIGNAL",
+ "version": "1.1.0",
+ "size": [
+  1600,
+  900
+ ],
+ "file": "T8.png"
+}

@@ -8,8 +8,21 @@ git clone https://github.com/iameastblood/eb-signal.git   # her koşuda: git pul
 pip install -r requirements.txt
 python render.py t2 veri.json cikti.png    # cikti.png + cikti.meta.json
 ```
-Şablonlar: `t1` haber · `t2` benchmark · `t3` karşılaştırma · `t4` sızıntı/ekran görüntüsü · `t5` büyük rakam · `t6` alıntı.
-JSON örnekleri: `examples/t1.json ... t6.json`. Kurallar ve karar ağacı: **EB_SIGNAL_SPEC.md**.
+Şablonlar: `t1` haber · `t2` benchmark · `t3` karşılaştırma · `t4` sızıntı/ekran görüntüsü · `t5` büyük rakam · `t6` alıntı · `t8` gerçek kişi kompoziti.
+JSON örnekleri: `examples/t1.json ... t6.json, t8.json`. Kurallar ve karar ağacı: **EB_SIGNAL_SPEC.md**.
+
+## Yeni (v1.1): T8 kişi kompoziti ve logo ekleme
+```bash
+# T8: gerçek kişi fotoğrafı (yol ya da URL) -> otomatik kesim (rembg) -> konu zemini -> yazı + filigran
+python render.py t8 examples/t8.json examples/T8.png
+# Eksik logoyu kütüphaneye ekle (şeffaf yapar, kırpar, koyu zemin kontrolü, logos.csv satırı, push)
+python add_logo.py --src https://.../logo.png --slug claude-code --name "Claude Code" \
+    --tags coding,agent --source https://resmi-site/press --push
+```
+- T8 sert kuralları: yüz asla AI ile üretilmez/değiştirilmez (yalnız kesme, kırpma, renk, ışık); sahte alıntı yok; kişinin orada olduğu ima edilmez; foto kaynağı kredilenir. Ayrıntı: EB_SIGNAL_SPEC.md bölüm 11.
+- Logo kütüphanesi büyür: haberdeki logo yoksa üreten ajan ekler, `git pull --rebase` ile push eder, başkasının logosunu silmez/yeniden adlandırmaz. Ayrıntı: bölüm 10, `add_logo.py --help`.
+- `rembg` ilk kullanımda ~176 MB'lık modeli indirir. Yoksa T8 yumuşak kenarlı çerçeve yedeğine düşer.
+- `examples/amodei_2023.jpg`: Wikimedia Commons, "Dario Amodei in 2023", fotoğraf UK Prime Minister (Flickr), CC BY 2.0. Sadece örnek içindir.
 
 ## Değişmez kurallar
 - Logo sadece `logos/` klasöründen (logos.csv). Yapay zekâ ile logo **asla** çizilmez.

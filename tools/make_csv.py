@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """logos.csv üretir: eski kayıtları korur, katalogdan yenileri ekler.
 
-Kolonlar (eski düzen korunur, sona iki kolon eklenir):
-slug,name,kind,svg_url,png_url,source_page,license,brand,white_png_url
+Kolonlar (eski düzen korunur, sona kolon eklenir):
+slug,name,kind,svg_url,png_url,source_page,license,brand,white_png_url,tags
 """
 import csv, json
 from pathlib import Path
@@ -43,14 +43,16 @@ def main():
             "license": lic,
             "brand": e["brand"],
             "white_png_url": f"{RAW}/{slug}-white.png" if white.exists() else "",
+            "tags": by_slug.get(slug, {}).get("tags", "other"),
         }
     # eski kayıtlara brand/white kolonlarını tamamla
     for slug, r in by_slug.items():
         r.setdefault("brand", "")
         r.setdefault("white_png_url", f"{RAW}/{slug}-white.png" if (ROOT / "logos" / f"{slug}-white.png").exists() else "")
         r.setdefault("license", LEGACY_LICENSE)
+        r.setdefault("tags", "other")
     rows = sorted(by_slug.values(), key=lambda r: (r.get("brand") or "zzz", r["slug"]))
-    cols = ["slug", "name", "kind", "svg_url", "png_url", "source_page", "license", "brand", "white_png_url"]
+    cols = ["slug", "name", "kind", "svg_url", "png_url", "source_page", "license", "brand", "white_png_url", "tags"]
     with open(ROOT / "logos.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
         w.writeheader()

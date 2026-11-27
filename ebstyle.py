@@ -123,11 +123,11 @@ def top(cv, tag, stamp=None, stamp_col=None):
         col = hx(stamp_col or C['amber']); f = font('mono', 20, 700); w = cv.tw(stamp, f)+36
         cv.rrect((W-M-w, 46, W-M, 80), 17, outline=col, width=2); cv.text((W-M-w/2, 63), stamp, f, col, "mm")
 
-def bottom(cv, source, date):
+def bottom(cv, source, date, maxw=520):
     cv.line((M, 804, W-M, 804), hx(C['line']), 2)
     fs = font('body', 22, 500); src = "Kaynak: "+source
-    if cv.tw(src, fs) > 520:
-        while cv.tw(src+"…", fs) > 520: src = src[:-1]
+    if cv.tw(src, fs) > maxw:
+        while cv.tw(src+"…", fs) > maxw: src = src[:-1]
         src = src.rstrip()+"…"
     cv.text((M, 852), src, fs, hx(C['muted']), "lm"); cv.text((W-M, 852), date, fs, hx(C['muted']), "rm")
     f = font('body', 26, 600); w = cv.tw(WATERMARK, f)+56
@@ -291,4 +291,106 @@ def t6(d, out):
     cv.text((M+150+tw+24, y+66), d.get("role", ""), font('body', 24, 500), hx(C['muted']), "lm")
     bottom(cv, d["source"], d["date"]); return cv.save(out, dict(template="T6", data=d))
 
-TEMPLATES = dict(t1=t1, t2=t2, t3=t3, t4=t4, t5=t5, t6=t6)
+# ---------- T8 PERSON COMPOSITE ----------
+import hashlib, urllib.request, tempfile
+
+def _fetch(path_or_url):
+    """Local path or http(s) URL -> local path (URL cached in tmp)."""
+    if not str(path_or_url).startswith("http"):
+        p = path_or_url if os.path.exists(path_or_url) else os.path.join(ROOT, path_or_url)
+        if not os.path.exists(p): raise SystemExit(f"dosya yok: {path_or_url}")
+        return p
+    cache = os.path.join(tempfile.gettempdir(), "ebsignal_" + hashlib.md5(path_or_url.encode()).hexdigest() + os.path.splitext(path_or_url.split("?")[0])[1][:5])
+    if not os.path.exists(cache):
+        req = urllib.request.Request(path_or_url, headers={"User-Agent": "Mozilla/5.0 (EB-SIGNAL render)"})
+        open(cache, "wb").write(urllib.request.urlopen(req, timeout=60).read())
+    return cache
+
+def cutout_person(path, max_side=1600):
+    """Real photo -> RGBA cutout via rembg (u2net_human_seg). Returns (img, method).
+    Fallback (rembg/onnx missing or fails): the photo in a rounded, feathered frame. The face is NEVER regenerated."""
+    im = Image.open(path).convert("RGB"); im.thumbnail((max_side, max_side), Image.LANCZOS)
+    try:
+        from rembg import remove, new_session
+        out = remove(im, session=new_session("u2net_human_seg")).convert("RGBA")
+        if out.getchannel("A").getbbox() is None: raise RuntimeError("empty mask")
+        return out, "rembg"
+    except Exception as e:  # noqa
+        print("UYARI: rembg yok/başarısız, yumuşak kenarlı çerçeve kullanılıyor:", type(e).__name__)
+        rgba = im.convert("RGBA"); m = Image.new("L", rgba.size, 0)
+        ImageDraw.Draw(m).rounded_rectangle([0, 0, rgba.width-1, rgba.height-1], radius=int(min(rgba.size)*0.06), fill=255)
+        rgba.putalpha(m.filter(ImageFilter.GaussianBlur(max(2, min(rgba.size)//60)))); return rgba, "frame"
+
+def _cover(im, size):
+    r = max(size[0]/im.width, size[1]/im.height); im = im.resize((int(im.width*r)+1, int(im.height*r)+1), Image.LANCZOS)
+    l, t = (im.width-size[0])//2, (im.height-size[1])//2; return im.crop((l, t, l+size[0], t+size[1]))
+
+def t8(d, out):
+    cv = Canvas(); CW, CH = cv.im.size
+    # --- background: topical photo / AI scene, graded dark. Default ember bg. No faces in backdrops.
+    bgp = _fetch(d["bg"]) if d.get("bg") and str(d["bg"]).startswith("http") else None
+    if not bgp:
+        name = d.get("bg") or "ember_01.jpg"
+        bgp = name if os.path.exists(name) else os.path.join(ROOT, "bg", name)
+    bg = _cover(Image.open(bgp).convert("RGB"), (CW, CH))
+    arr = np.asarray(bg).astype(np.float32)/255; lum = arr.mean(axis=2, keepdims=True)
+    arr = lum*0.55 + arr*0.45                       # desaturate toward EB SIGNAL dark
+    arr = arr*np.array([0.80, 0.86, 1.0]) * 0.62     # cool navy, darker
+    bg = Image.fromarray((np.clip(arr, 0, 1)*255).astype(np.uint8)).convert("RGBA"); cv.im.alpha_composite(bg)
+    xs = np.linspace(0, 1, CW); fade = np.clip(1-(xs-0.0)/(1060/W), 0, 1)**0.9       # left text-side darkening
+    ov = Image.new("RGBA", cv.im.size, hx(C['bg'])); ov.putalpha(Image.fromarray(np.repeat((fade*215)[None, :], CH, 0).astype(np.uint8)))
+    cv.im.alpha_composite(ov)
+    cv.glow(1320, 760, 420, C['ember'], 70)
+    # --- person: cutout, grade, rim glow
+    cut, method = cutout_person(_fetch(d["person"]))
+    bb = cut.getchannel("A").point(lambda v: 255 if v > 24 else 0).getbbox(); cut = cut.crop(bb)
+    keep = float(d.get("person_crop_bottom", 0.80))            # keep top share of the cutout (bust)
+    cut = cut.crop((0, 0, cut.width, int(cut.height*keep)))
+    ph = int(S*(H-60)); pw = int(cut.width*ph/cut.height)
+    if pw > S*W*0.46: pw = int(S*W*0.46); ph = int(cut.height*pw/cut.width)
+    cut = cut.resize((pw, ph), Image.LANCZOS)
+    a = np.asarray(cut.getchannel("A")).astype(np.float32)/255
+    a = np.asarray(Image.fromarray((a*255).astype(np.uint8)).filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(S*0.8))).astype(np.float32)/255  # erode halo + soften edge
+    rgb = np.asarray(cut.convert("RGB")).astype(np.float32)/255; l = rgb.mean(axis=2, keepdims=True)
+    rgb = l + (rgb-l)*0.90                                   # slight desaturation
+    rgb = np.clip((rgb-0.5)*1.06+0.5, 0, 1)*np.array([0.97, 0.98, 1.0])
+    yy = np.linspace(0, 1, ph)[:, None, None]; rgb = rgb*(1-0.10*yy)   # gentle darkening to the bottom
+    xx = np.linspace(0, 1, pw)[None, :, None]; rgb = np.clip(rgb+np.array([0.10, 0.025, 0.0])*(xx**2.2), 0, 1)  # warm ember light on the right edge
+    fadeb = np.clip((1-np.linspace(0, 1, ph))/0.20, 0, 1)    # bottom 20% fades into the scene
+    a = a*fadeb[:, None]
+    edge = np.clip(np.linspace(0, 1, pw)/0.10, 0, 1); a = a*edge[None, :]   # soften the hard crop edge on the left of the photo
+    px_, py_ = CW-pw-int(S*10), CH-ph
+    glow = Image.fromarray((a*255).astype(np.uint8)).filter(ImageFilter.MaxFilter(7)).filter(ImageFilter.GaussianBlur(S*14))
+    ga = Image.new("RGBA", cut.size, hx(C['ember'])); ga.putalpha(glow.point(lambda v: int(v*0.42)))
+    cv.im.alpha_composite(ga, (px_, py_))
+    person = Image.fromarray((rgb*255).astype(np.uint8)).convert("RGBA"); person.putalpha(Image.fromarray((a*255).astype(np.uint8)))
+    cv.im.alpha_composite(person, (px_, py_))
+    # --- text (code only)
+    top(cv, d.get("tag", "KİŞİ"), stamp_of(d))
+    y = 130
+    if d.get("logo") or d.get("company"):
+        tw = any_tile(cv, (M, y), 88, d.get("logo"), d.get("company", ""), radius=20)
+        if d.get("company"): cv.text((M+tw+22, y+44), d["company"], font('head', 34, 700), hx(C['text']), "lm")
+    y = cv.rich(M, 270, d["headline"], d.get("highlight"), font('head', 60, 700), 720, 70, 4)
+    if d.get("quote"):
+        qf = font('head', 34, 500); ql = cv.wrap("“"+d["quote"]+"”", qf, 680)
+        if len(ql) > 4: raise SystemExit("alıntı en fazla 4 satır")
+        cv.rect((M, y+28, M+5, y+28+len(ql)*46), hx(C['ember']))
+        for i, t in enumerate(ql): cv.text((M+28, y+28+i*46), t, qf, hx(C['soft']))
+        y += 28+len(ql)*46
+    if d.get("sub"):
+        fs = font('body', 28, 400); sl = cv.wrap(d["sub"], fs, 720)
+        if len(sl) > 3: raise SystemExit("sub en fazla 3 satır")
+        for i, t in enumerate(sl): cv.text((M, y+24+i*40), t, fs, hx("#B4BBC9"))
+        y += 24+len(sl)*40
+    if y > 650: raise SystemExit("metin çok uzun (kişi bloğuna taşıyor)")
+    cv.text((M, 700), d["person_name"], font('head', 36, 700), hx(C['text']), "lm")
+    cv.text((M, 740), d.get("role", ""), font('body', 24, 500), hx(C['muted']), "lm")
+    # --- source (+ photo credit) and watermark
+    src, cr = d["source"], d.get("photo_credit")
+    if cr and cv.tw("Kaynak: "+src+" · Foto: "+cr, font('body', 22, 500)) <= 560: src, cr = src+" · Foto: "+cr, None
+    elif cr: cv.text((M, 780), "Foto: "+cr, font('body', 22, 500), hx(C['dim']), "lm")
+    bottom(cv, src, d["date"], maxw=560)
+    return cv.save(out, dict(template="T8", cutout=method, data=d))
+
+TEMPLATES = dict(t1=t1, t2=t2, t3=t3, t4=t4, t5=t5, t6=t6, t8=t8)
