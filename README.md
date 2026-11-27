@@ -17,5 +17,7 @@ JSON örnekleri: `examples/t1.json ... t6.json`. Kurallar ve karar ağacı: **EB
 - Rakam uydurulmaz. Kaynak satırı görselin içinde. `@eastblood_tr` alt ortada (render.py otomatik basar).
 - Em dash (—) yok. Başlık bir bulgu cümlesidir.
 
+Notion: [Görsel Standart · EB SIGNAL](https://app.notion.com/p/425dfcae38b1810b969ccc7675aadb85) (Tasarım İlhamı tablosu orada)
+
 Sürüm: `VERSION` · değişiklikler: `CHANGELOG.md` · ilham arşivi: `ilham/`
 Fontlar SIL OFL 1.1 (fonts/OFL-*.txt). Logolar ilgili şirketlerin markasıdır; burada yalnızca haber/yorum amaçlı tutulur.
