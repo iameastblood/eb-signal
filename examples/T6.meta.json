@@ -1,0 +1,22 @@
+{
+ "template": "T6",
+ "data": {
+  "tag": "ALINTI",
+  "example": "ÖRNEK İÇERİK",
+  "bg": "ember_01.jpg",
+  "quote": "Bu örnek bir alıntıdır. Gerçek kullanımda söz, kaynağından birebir çevrilir ve anlamı değiştirilmez.",
+  "highlight": "birebir çevrilir",
+  "logo": "anthropic",
+  "name": "Örnek Kişi",
+  "role": "Unvan, Şirket (örnek)",
+  "source": "Röportaj (örnek)",
+  "date": "27 Kas 2026"
+ },
+ "style": "EB SIGNAL",
+ "version": "1.0.0",
+ "size": [
+  1600,
+  900
+ ],
+ "file": "T6.png"
+}

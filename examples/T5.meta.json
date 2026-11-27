@@ -1,0 +1,33 @@
+{
+ "template": "T5",
+ "data": {
+  "tag": "RAKAM",
+  "example": true,
+  "bg": "ember_01.jpg",
+  "logo": "nvidia",
+  "company": "NVIDIA",
+  "meta": "Çeyrek sonuçları  ·  örnek",
+  "number": "%62",
+  "label": "Veri merkezi gelirinde yıllık artış",
+  "context": "Örnek veri. Gerçek kullanımda rakam resmi bilançodan alınır.",
+  "compare": [
+   {
+    "label": "Önceki çeyrek",
+    "value": "%48"
+   },
+   {
+    "label": "Beklenti",
+    "value": "%55"
+   }
+  ],
+  "source": "ÖRNEK (gerçekte: şirket bilançosu)",
+  "date": "27 Kas 2026"
+ },
+ "style": "EB SIGNAL",
+ "version": "1.0.0",
+ "size": [
+  1600,
+  900
+ ],
+ "file": "T5.png"
+}

@@ -1,0 +1,8 @@
+{"tag":"BENCHMARK","example":true,"title":"Model A, kodlama testinde rakiplerini geride bıraktı","highlight":"Model A,",
+ "subtitle":"Kodlama testi, doğru çözüm oranı (%)","higher_is_better":true,"max":100,
+ "rows":[{"name":"Model A","company":"OpenAI","logo":"openai","value":82.4},
+         {"name":"Model B","company":"Anthropic","logo":"claude","value":76.1},
+         {"name":"Model C","company":"Google","logo":"gemini","value":71.9},
+         {"name":"Model D","company":"DeepSeek","logo":"deepseek","value":64.3},
+         {"name":"Model E","company":"Meta","logo":"meta","value":58.7}],
+ "source":"ÖRNEK (gerçekte: resmi kaynak)","date":"27 Kas 2026"}

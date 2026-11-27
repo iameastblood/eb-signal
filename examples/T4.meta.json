@@ -1,0 +1,31 @@
+{
+ "template": "T4",
+ "data": {
+  "tag": "SIZINTI",
+  "example": "ÖRNEK İÇERİK",
+  "status": "Doğrulanmadı",
+  "title": "Yeni model haftaya geliyor iddiası",
+  "highlight": "haftaya",
+  "points": [
+   "İddia tek bir hesaptan geliyor, şirket açıklama yapmadı",
+   "Bağlam penceresinin iki katına çıkacağı söyleniyor"
+  ],
+  "screenshot": "examples/sample_screenshot.png",
+  "handle": "x.com/ornek_sizinti",
+  "highlight_box": [
+   30,
+   160,
+   1170,
+   280
+  ],
+  "source": "@ornek_sizinti (X)",
+  "date": "27 Kas 2026"
+ },
+ "style": "EB SIGNAL",
+ "version": "1.0.0",
+ "size": [
+  1600,
+  900
+ ],
+ "file": "T4.png"
+}
