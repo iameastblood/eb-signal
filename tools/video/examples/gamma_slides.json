@@ -1,0 +1,84 @@
+{
+ "mode": "slides",
+ "slides": [
+  "slides/1.png",
+  "slides/2.png",
+  "slides/3.png",
+  "slides/4.png",
+  "slides/5.png"
+ ],
+ "title_card": false,
+ "title": "Claude kendi API'sini Rust'a taşıdı",
+ "tag": "AI HABER · ANTHROPIC",
+ "logo": "anthropic",
+ "genre": "tech",
+ "sub_lang": "en",
+ "lead": 0.6,
+ "tail": 1.4,
+ "comma_ms": 200,
+ "period_ms": 480,
+ "speed": 0.95,
+ "sub_font_px": 38,
+ "lines": [
+  {
+   "slide": 0,
+   "tr_chunks": [
+    "Entropik, Klod'a ulaşılan ana kapıyı Paytın'dan Rast diline taşıdı",
+    "ve yeni kodun ilk sürümünü yine Klod yazdı"
+   ],
+   "sub_chunks": [
+    "Anthropic moved the main door to Claude from Python to *Rust*,",
+    "and Claude itself wrote the first version."
+   ]
+  },
+  {
+   "slide": 1,
+   "tr_chunks": [
+    "2024 başından bu yana trafik yaklaşık bin sekiz yüz kat büyüdü",
+    "Paytın ise her adımda fazladan yük bindiriyordu"
+   ],
+   "sub_chunks": [
+    "Since early 2024, traffic grew about *1,800x*,",
+    "and Python added overhead at every step."
+   ]
+  },
+  {
+   "slide": 2,
+   "tr_chunks": [
+    "Klod çekirdek kodu yaklaşık bir haftada yazdı",
+    "ama nisanda testlerin yüzde doksan sekizi geçerken",
+    "gerçek trafikte girdilerin ancak dörtte biri birebir eşleşiyordu"
+   ],
+   "sub_chunks": [
+    "Claude wrote the core in about *a week*,",
+    "but while 98% of tests passed in April,",
+    "only about *a quarter* of real inputs matched."
+   ]
+  },
+  {
+   "slide": 3,
+   "tr_chunks": [
+    "Ekip müşteri isteklerini hiç okumadan farkların yalnızca izini kaydetti",
+    "ve hataları düzeltmeleri için ajanları otomatik olarak gönderdi"
+   ],
+   "sub_chunks": [
+    "Without reading customer requests, the team logged only the *shape* of each difference,",
+    "and dispatched agents to fix them automatically."
+   ]
+  },
+  {
+   "slide": 4,
+   "tr_chunks": [
+    "Sonuçta istek başına yaklaşık yüzde yetmiş daha az işlemci",
+    "ilk yanıtta yüzde yirmi hızlanma",
+    "ve servis bir an bile kapanmadı"
+   ],
+   "sub_chunks": [
+    "The result: about *70% less CPU* per request,",
+    "a 20% faster first token,",
+    "and *zero* downtime."
+   ]
+  }
+ ],
+ "_note": "Gamma slayt yedek ornegi (test, yayinlanmadi). Gamma png export ZIP'ini bu job'un yanindaki slides/ klasorune 1.png..5.png diye ac. Kaynak: https://www.anthropic.com/research/migrating-api-to-rust (25 Kas 2026)."
+}

@@ -1,4 +1,4 @@
-# EB SIGNAL · Spec v1.3 (VERSION 1.3.0)
+# EB SIGNAL · Spec v1.4 (VERSION 1.4.0)
 @eastblood_tr ortak görsel standardı. X Marabası, Manus, Orva görsel üretmeden önce bunu okur.
 Referans kod: `ebstyle.py` + `render.py`. Ölçüler mantıksal piksel (render 2x yapılıp küçültülür).
 
@@ -107,15 +107,23 @@ Görselin üstündeki yazı ile post metni aynı cümleyi **asla** tekrar etmez.
 - T8 için: görsel başlığı kişinin söylediği şeyin özü + unvan; post metni, o sözün neden önemli olduğuna dair kanca.
 
 
-## 13. Video standardı (v1.2.0)
+## 13. Video standardı (v1.4.0)
 Kural kaynağı: Notion Görsel Standart · EB SIGNAL > VİDEO STANDARDI. Uygulama: `tools/video/` (tek komut), müzik: `music/`.
 - Türkçe Cartesia seslendirme (My Turkish Voice, sonic-3.6, `language: tr`), yabancı kelimeler TTS metninde Türkçe okunuşla (Open ey ay, Liniyır), ekranda doğru yazım.
 - Virgülde kısa nefes (`<break 200ms>`, ölçülen ~0,5 sn), noktada daha uzun (`<break 480ms>`, ~0,75 sn). Her şey tek nefes olmaz.
 - Ses ekranla senkron: her cümle kaynak videoda o anlatılanın göründüğü kesitle eşlenir.
-- İngilizce altyazı yakılır: kutu yok, şeffaf; kontur + yumuşak gölge, Inter 700 ~41 px, max 2 satır, giriş ve çıkış animasyonlu.
+- **Altyazı TEK dil** (Doğukan kararı t196u/t197u, çift dil yok): küresel konuda **İngilizce**, yalnız Türkiye'yi ilgilendiren konuda **Türkçe** (job: `sub_lang`, metin `sub_chunks`; eski `en_chunks` geriye uyumlu). Kutu yok, şeffaf; ince koyu kontur + yumuşak gölge, Inter 700 ~38-41 px, max 2 satır, giriş ve çıkış animasyonlu. Parça başına **1-2 önemli kelime ember** (#FF5A36, 800 ağırlık): `*kelime*` ya da `[[kelime]]`, 3. işaret hata verir.
 - Başlık kartı ve filigran (`@eastblood_tr` alt orta) animasyonlu, filigran nazik ve her zaman okunur.
 - Müzik: önce ElevenLabs (VO'nun ~20 dB altı), olmazsa `music/` kütüphanesi. VO varken orijinal ses tamamen kapalı.
 - 16:9 H.264/AAC, 1920x1080, 30 fps. Hareket katmanı HyperFrames (HTML+GSAP).
+
+### 13.1 Gamma slayt videosu (yedek, v1.4.0)
+- **Öncelik her zaman gerçek görüntü:** resmi şirket videosu, model demosu, gerçek çekim. Gamma slayt videosu yalnız konunun **hiç gerçek videosu yoksa** kullanılır (ör. mühendislik yazısı, rapor, rakam haberi).
+- **Günlük alışkanlık değildir.** Slayt videosu sık gelirse takipçi sıkılır, etkileşim düşer. Kolaya kaçma: önce gerçek video ara, bulamadığını logla, sonra Gamma.
+- Üretim: Gamma `generate` (format presentation, 16:9, `cardSplit: inputTextBreaks`, `textMode: preserve`, tema `canaveral` + EB SIGNAL ek talimatı: #0A0C10 zemin, ember vurgu, kart başına tek büyük başlık/rakam, alt çeyrek boş) > `exportAs: png` (ZIP, kart başına 2400x1350 PNG) > `make_video.py` job'unda `"mode": "slides"`, `"slides": [...]`, her satırda `"slide": i`, `"title_card": false`.
+- Slayt yazısı seslendirmeyi tekrar etmez, tamamlar (rakam, anahtar kelime); ilk kart güçlü kanca. Okları `->` değil `→` yaz (Gamma düz metin basar).
+- Hat: slaytlar HyperFrames'te blur+ölçek+kayma ile girer/çıkar, içte yavaş Ken Burns, geçişte ember tarama çizgisi; geçişler cümle arası sessizliğin ortasında (ses ile slayt senkron). Altyazı, filigran, müzik ve VO kuralları yukarıdakiyle aynı.
+- **Higgsfield ve Runway** (Doğukan'ın Pro hesapları; görsel, video, ses efekti, görsel efekt, animasyon) **yalnız gerçekten gerektiğinde**: krediler sınırlı. Gamma veya repo araçları işi çözüyorsa kullanılmaz; kullanıldıysa Notion güncellemesinde/raporda neden ve kaç kredi yazılır.
 
 ## 13. Vurgu standardı (v1.3, Doğukan onaylı 27 Kas 2026)
 Önemli kelime/ifadeler **ember #FF5A36 + biraz daha kalın ağırlıkla** vurgulanır. Tüm şablonlarda aynı:

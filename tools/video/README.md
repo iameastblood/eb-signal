@@ -1,6 +1,6 @@
-# tools/video · EB SIGNAL video hattı (v1.3.0)
+# tools/video · EB SIGNAL video hattı (v1.4.0)
 
-Resmi bir şirket videosunu (kaynak) alır; Türkçe Cartesia seslendirmesi, yakalanmış İngilizce altyazı, müzik ve HyperFrames hareket katmanıyla `@eastblood_tr` videosuna çevirir. **Hiçbir yere yayınlamaz.** Çıktı: `final.mp4` + 3 kare PNG + `report.json`.
+Resmi bir şirket videosunu (kaynak) ya da gerçek video yoksa Gamma slayt PNG'lerini (`mode: slides`) alır; Türkçe Cartesia seslendirmesi, yakılmış tek dil altyazı (küresel konu EN, Türkiye konusu TR), müzik ve HyperFrames hareket katmanıyla `@eastblood_tr` videosuna çevirir. **Hiçbir yere yayınlamaz.** Çıktı: `final.mp4` + 3 kare PNG + `report.json`.
 
 ## Tek komut
 ```bash
@@ -17,7 +17,9 @@ Anahtarlar yalnız ortam değişkeninden: `CARTESIA_API_KEY` (TTS), `ELEVENLABS_
 | `title`, `tag` | üstteki kısa başlık kartı (Space Grotesk) ve ember etiket |
 | `logo` | `logos/<slug>.png`; varsa `-white` sürümü seçilir. Logo yoksa `add_logo.py` ile ekle, çizme |
 | `genre` | `tech/finance/mystery/space/neutral` (müzik) |
-| `lines[]` | her satır = bir VO cümlesi: `tr_chunks` (virgülle bölünen Türkçe parçalar, TTS okunuşuyla), `en_chunks` (aynı sayıda, ekrana basılan İngilizce, parça başına max 2 satır), `src_start` (bu cümlenin ekranla eşleşeceği kaynak saniyesi) |
+| `lines[]` | her satır = bir VO cümlesi: `tr_chunks` (virgülle bölünen Türkçe parçalar, TTS okunuşuyla), `sub_chunks` (aynı sayıda, ekrana basılan altyazı, parça başına max 2 satır, 1-2 kelime `*ember*`; eski ad `en_chunks` da çalışır), `src_start` (kaynak saniyesi) ya da slayt modunda `slide` (0'dan slayt sırası) |
+| `sub_lang` | `en` (küresel konu, varsayılan) ya da `tr` (yalnız Türkiye konusu). Tek dil; çift dil altyazı yok |
+| `mode`, `slides`, `title_card` | `"mode": "slides"` + `"slides": ["slides/1.png", ...]` (job dosyasına göre yol) = Gamma slayt videosu; `title_card: false` başlık kartını kapatır (ilk slayt kanca olduğunda) |
 | `comma_ms` / `period_ms` | virgül ve nokta için eklenen `<break>` süresi (varsayılan 220 / 750; ölçülen toplam duraklama virgülde ~0,35 sn, noktada ~1,0 sn) |
 | `speed`, `voice_id`, `model` | varsayılan 0.94, My Turkish Voice, sonic-3.6 |
 | `lead`, `tail` | VO'dan önce 0,5 sn, sonra 1,2 sn; `sub_font_px` 41 |
@@ -25,8 +27,11 @@ Anahtarlar yalnız ortam değişkeninden: `CARTESIA_API_KEY` (TTS), `ELEVENLABS_
 ## Ne yapar (sıra)
 1. Kaynak indirilir. 2. TTS metni kurulur (kural denetimi: em dash, @, `[...]`, mojibake, rakam ve kısaltma uyarısı). Virgüle `<break 220ms>`, noktaya `<break 750ms>`. VO üretilir (tek istek, doğal prozodi). 3. VO'daki sessizlikler ölçülür: en uzun N-1 sessizlik cümle sınırı, satır içi en uzunlar virgül sınırı. Altyazı ve görüntü bu zamanlara bağlanır, Whisper gerekmez (`--qa` ile geri dinleme dosyası). 4. **Senkron:** her cümle için kaynakta `src_start` (ya da önceki kesimin bittiği yer, hangisi geçse) noktasından o cümlenin VO süresi kadar görüntü kesilir; kesimler konuşmanın boşluk ortasındadır; VO hiç kesilip yapıştırılmaz. 5. Ses: VO -16 LUFS (sıkıştırıcı yok, linear loudnorm + alimiter), müzik -36 LUFS (VO'nun ~20 dB altı), orijinal ses tamamen kapalı. 6. HyperFrames projesi üretilir (`out/hf/`): başlık kartı, altyazılar, filigran; `render` ile MP4. 7. Ses VO+müzik karışımıyla mux, 3 kare.
 
+## Gamma slayt modu (yedek, sadece gerçek video yoksa)
+Gerçek görüntü önceliklidir; slayt videosu günlük alışkanlık olmaz (spec 13.1). Akış: Gamma `generate` (16:9, `cardSplit: inputTextBreaks`, `textMode: preserve`, tema `canaveral`, `exportAs: png`) > ZIP'i aç > `slides/1.png...` > job'da `mode: slides` > aynı komut. Örnek: `examples/gamma_slides.json`. Slaytlar 1920x1080'e kırpılır; giriş blur+ölçek+kayma, içte Ken Burns, geçişte ember tarama çizgisi; geçiş cümle arası sessizliğin ortasında. Higgsfield/Runway yalnız gerçekten gerekirse (sınırlı kredi).
+
 ## Görünüm (kural)
-- Altyazı **kutusuz**: Inter 700, ~41 px, ince koyu kontur + yumuşak gölge. İki satırı geçmez. Her altyazı kelime kelime blur+yükselme ile girer, blur ile çıkar.
+- Altyazı **tek dil, kutusuz**: Inter 700, ~38-41 px, ince koyu kontur + yumuşak gölge, 1-2 anahtar kelime ember (800). İki satırı geçmez. Her altyazı kelime kelime blur+yükselme ile girer, blur ile çıkar.
 - Başlık kartı: panel soldan açılır, ember çubuk iner, logo yaylanarak gelir, başlık kelime kelime girer; çıkış hızlı blur+kayma.
 - Filigran `@eastblood_tr` alt orta: yumuşak giriş, ember çizgi, nabız atan nokta, ~9 sn'de bir ışık süpürmesi, sonda çıkış. Her zaman okunur (kontur), altyazı üstünde durur.
 

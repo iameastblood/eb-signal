@@ -9,6 +9,12 @@
 Kural: her değişiklik VERSION'ı artırır. MAJOR = şablon yapısı/palet değişimi, MINOR = yeni şablon veya yeni alan, PATCH = ölçü/renk ince ayarı, logo ekleme.
 Haftada en fazla 1-2 değişiklik, Doğukan onayından sonra. Her satır: tarih, sürüm, ne değişti, neden (hangi veri).
 
+## 1.4.0 · 2026-11-27
+- MINOR: **Gamma slayt videosu (yedek)**: `make_video.py` `"mode": "slides"` (Gamma PNG export > HyperFrames slayt katmanı: blur+ölçek+kayma giriş/çıkış, Ken Burns, ember tarama çizgisi; geçişler cümle arası sessizlikte). Yeni alanlar `slides`, `lines[].slide`, `title_card`. Örnek `examples/gamma_slides.json`.
+- Değişen kural (Doğukan t196u/t197u): **altyazı tek dil**: küresel konu EN, yalnız Türkiye konusu TR (`sub_lang`, `sub_chunks`; `en_chunks` geriye uyumlu). Altyazıda **1-2 ember vurgu** `*kelime*` / `[[kelime]]` (800 ağırlık, noktalama yapışık), 3. işaret hata.
+- Spec 13 + yeni 13.1: Gamma yalnız gerçek video yoksa, günlük alışkanlık değil; Higgsfield/Runway yalnız gerektiğinde (sınırlı kredi).
+- Neden: Doğukan t199u (Gamma/Higgsfield/Runway bağlandı), Gamma test videosu.
+
 ## 1.3.0 · 2026-11-27
 - MINOR: tüm şablonlarda **vurgu standardı** `*kelime*` / `[[kelime]]` (ember + biraz daha kalın, blok başına en fazla 2; T1 sub, T4 maddeler, T5 context, T6/T8 alıntı dahil). `highlight` alanı geriye uyumlu.
 - **Logo varsa marka adı yazılmaz** (T1, T2, T3, T5, T8): logonun yanındaki şirket adı / T2 şirket satırı kaldırıldı; T3'te kart adı marka adıyla aynıysa yalnız model satırı. Marka adı sadece logo yokken (harf karosu).

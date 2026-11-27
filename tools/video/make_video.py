@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EB SIGNAL video pipeline (v1): official clip + Turkish Cartesia VO + EN subtitles + music + HyperFrames motion layer.
+"""EB SIGNAL video pipeline (v1.4): official clip (or Gamma slide images, mode=slides) + Turkish Cartesia VO + EN subtitles + music + HyperFrames motion layer.
 
 One command:
   python tools/video/make_video.py --job tools/video/examples/dot_v2.json --out /workspace/videotest/out [--vo vo.wav] [--music m.mp3]
@@ -64,9 +64,11 @@ def preflight(text, job):
     abbr = sorted(set(re.findall(r"\b[A-Z]{2,}\b", plain)))
     if abbr: print("UYARI: kisaltma harf harf yazilmali (or. GPT -> Ci Pi Ti):", abbr)
     for ln in job["lines"]:
-        if len(ln["tr_chunks"]) != len(ln["en_chunks"]):
-            raise SystemExit("tr_chunks ve en_chunks sayisi esit olmali (altyazi her TR parcayi izler)")
-        for t in ln["en_chunks"] + ln["tr_chunks"]:
+        if len(ln["tr_chunks"]) != len(sub_chunks(ln)):
+            raise SystemExit("tr_chunks ve sub_chunks (eski: en_chunks) sayisi esit olmali (altyazi her TR parcayi izler)")
+        for t in sub_chunks(ln):
+            if em_count(t) > 2: raise SystemExit(f"altyazi parcasinda en fazla 2 vurgu (*kelime*): {t}")
+        for t in sub_chunks(ln) + ln["tr_chunks"]:
             if "—" in t or "–" in t or t.lstrip().startswith("@"):
                 raise SystemExit(f"yasak karakter/@ ile baslama: {t}")
     if len(plain) > 1000: print("UYARI: >1000 karakter; kural 13: parcala (<=900-1000)")
@@ -153,10 +155,42 @@ def pick_music(job, args, outdir):
 def esc(s): return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
+def sub_chunks(ln):
+    """Altyazi metni: tek dil (sub_lang: en kuresel konu, tr sadece Turkiye konusu). Eski alan en_chunks da kabul edilir."""
+    return ln.get("sub_chunks") or ln["en_chunks"]
+
+
+EM_RE = re.compile(r"\*([^*]+)\*|\[\[(.+?)\]\]")
+
+
+def em_count(t): return len(EM_RE.findall(t))
+
+
 def words_html(text):
-    lines = text.split("\n"); out = []
-    for li, ln in enumerate(lines):
-        out.append('<span class="ln">' + "".join(f'<span class="w">{esc(w)}</span> ' for w in ln.split()) + "</span>")
+    """*kelime* / [[kelime]] -> ember + biraz kalin (EB SIGNAL vurgu standardi), isaretler ciktida gorunmez.
+    Noktalama kelimeye yapisik kalir ("*Rust*," -> Rust + beyaz virgul, arada bosluk yok)."""
+    out = []
+    for ln in text.split("\n"):
+        chars = []; pos = 0
+        for m in EM_RE.finditer(ln):
+            chars += [(c, False) for c in ln[pos:m.start()]]
+            chars += [(c, True) for c in (m.group(1) or m.group(2))]
+            pos = m.end()
+        chars += [(c, False) for c in ln[pos:]]
+        words = []; cur = []
+        for c, e in chars + [(" ", False)]:
+            if c.isspace():
+                if cur: words.append(cur); cur = []
+            else: cur.append((c, e))
+        spans = []
+        for w in words:
+            runs = []
+            for c, e in w:
+                if runs and runs[-1][1] == e: runs[-1][0] += c
+                else: runs.append([c, e])
+            inner = "".join(f'<span class="em">{esc(t)}</span>' if e else esc(t) for t, e in runs)
+            spans.append(f'<span class="w">{inner}</span> ')
+        out.append('<span class="ln">' + "".join(spans) + "</span>")
     return "".join(out)
 
 
@@ -165,26 +199,63 @@ FONT_CSS = """@font-face{font-family:'EBInter';src:url('assets/fonts/Inter.ttf')
 @font-face{font-family:'EBMono';src:url('assets/fonts/JetBrainsMono.ttf');font-weight:100 800;}"""
 
 
-def write_hf(hf, total, cues, job, args, logo_name):
+def slides_layer(slide_segs, T):
+    """Gamma slide modu: her slayt bir clip; giris blur+olcek+kayma, icte yavas Ken Burns, cikista blur; gecislerde ember tarama cizgisi."""
+    X = 0.38  # gecis yarim suresi (cumle arasi sessizligin ortasinda)
+    html = []; js = []
+    for k, (a, b, src) in enumerate(slide_segs):
+        st = 0.0 if k == 0 else max(0.0, a - X); en = T if k == len(slide_segs) - 1 else min(T, b + X)
+        dz = (1.0, 1.045) if k % 2 == 0 else (1.045, 1.0)
+        px = (-14, 14) if k % 2 == 0 else (14, -14)
+        html.append(f'<div id="s{k}" class="sl clip" data-start="{st:.3f}" data-duration="{en-st:.3f}" data-track-index="{k % 2}"><img id="s{k}i" class="sli" src="{src}"/></div>')
+        js.append(f'tl.fromTo("#s{k}i",{{scale:{dz[0]},x:{px[0]}}},{{scale:{dz[1]},x:{px[1]},duration:{en-st:.3f},ease:"none"}},{st:.3f});')
+        if k == 0:
+            js.append(f'tl.fromTo("#s{k}",{{opacity:0,scale:1.06,filter:"blur(16px)"}},{{opacity:1,scale:1,filter:"blur(0px)",duration:0.9,ease:"expo.out"}},0.0);')
+        else:
+            js.append(f'tl.fromTo("#s{k}",{{opacity:0,scale:1.05,x:60,filter:"blur(14px)"}},{{opacity:1,scale:1,x:0,filter:"blur(0px)",duration:{2*X:.3f},ease:"power3.out"}},{st:.3f});')
+            js.append(f'tl.fromTo("#sweep",{{x:-80,opacity:0.0}},{{x:2000,opacity:0.0,duration:0.7,ease:"power2.inOut",keyframes:{{opacity:[0,0.9,0.9,0]}}}},{st:.3f});')
+        if k < len(slide_segs) - 1:
+            js.append(f'tl.to("#s{k}",{{opacity:0,scale:0.97,x:-50,filter:"blur(10px)",duration:{2*X:.3f},ease:"power2.in"}},{b-X:.3f});')
+        else:
+            js.append(f'tl.to("#s{k}",{{opacity:0,filter:"blur(8px)",duration:0.6,ease:"power2.in"}},{T-0.65:.3f});')
+    css = ("#slides{position:absolute;inset:0;overflow:hidden;background:#0A0C10}.sl{position:absolute;inset:0;overflow:hidden}"
+           ".sli{position:absolute;inset:0;width:1920px;height:1080px;object-fit:cover}"
+           "#sweep{position:absolute;top:0;left:0;width:6px;height:1080px;background:linear-gradient(180deg,transparent,#FF5A36 30%,#FF5A36 70%,transparent);"
+           "box-shadow:0 0 28px rgba(255,90,54,.7);opacity:0}")
+    return css, "".join(html) + '<div id="sweep"></div>', "\n".join(js)
+
+
+def write_hf(hf, total, cues, job, args, logo_name, slide_segs=None):
     for d in ("compositions", "assets/fonts"): os.makedirs(os.path.join(hf, d), exist_ok=True)
     for src, dst in (("Inter-VariableFont_opsz-wght.ttf", "Inter.ttf"), ("SpaceGrotesk-VariableFont_wght.ttf", "SpaceGrotesk.ttf"),
                      ("JetBrainsMono-VariableFont_wght.ttf", "JetBrainsMono.ttf")):
         shutil.copy(os.path.join(ROOT, "fonts", src), os.path.join(hf, "assets/fonts", dst))
     T = f"{total:.3f}"; title_dur = min(8.6, total - 0.5)
+    show_title = job.get("title_card", True)
+    if slide_segs:
+        s_css, s_html, s_js = slides_layer(slide_segs, total)
+        base_el = f'<div id="slides" data-start="0" data-duration="{T}">{s_html}</div>'
+    else:
+        s_css, s_js = "", ""
+        base_el = f'<video id="base" class="clip" data-start="0" data-duration="{T}" data-track-index="0" src="assets/base.mp4" muted playsinline></video>'
+    title_el = (f'<div id="title" class="host clip" data-composition-id="title" data-composition-src="compositions/title.html" data-start="0" data-duration="{title_dur:.3f}" data-track-index="2" data-track-kind="graphics" data-width="1920" data-height="1080"></div>'
+                if show_title else "")
     index = f"""<!doctype html>
 <html lang="tr"><head><meta charset="UTF-8"/><meta name="viewport" content="width=1920, height=1080"/>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
 <style>{FONT_CSS}
 *{{margin:0;padding:0;box-sizing:border-box}}html,body{{width:1920px;height:1080px;overflow:hidden;background:#0A0C10}}
 #base{{position:absolute;left:0;top:0;width:1920px;height:1080px;object-fit:cover}}
-.host{{position:absolute;left:0;top:0;width:1920px;height:1080px}}</style></head><body>
+.host{{position:absolute;left:0;top:0;width:1920px;height:1080px}}{s_css}</style></head><body>
 <div id="root" data-composition-id="main" data-start="0" data-duration="{T}" data-width="1920" data-height="1080">
-  <video id="base" class="clip" data-start="0" data-duration="{T}" data-track-index="0" src="assets/base.mp4" muted playsinline></video>
-  <div id="title" class="host clip" data-composition-id="title" data-composition-src="compositions/title.html" data-start="0" data-duration="{title_dur:.3f}" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
-  <div id="subs" class="host clip" data-composition-id="subs" data-composition-src="compositions/subs.html" data-start="0" data-duration="{T}" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080"></div>
-  <div id="mark" class="host clip" data-composition-id="mark" data-composition-src="compositions/mark.html" data-start="0" data-duration="{T}" data-track-index="3" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+  {base_el}
+  {title_el}
+  <div id="subs" class="host clip" data-composition-id="subs" data-composition-src="compositions/subs.html" data-start="0" data-duration="{T}" data-track-index="3" data-track-kind="captions" data-width="1920" data-height="1080"></div>
+  <div id="mark" class="host clip" data-composition-id="mark" data-composition-src="compositions/mark.html" data-start="0" data-duration="{T}" data-track-index="4" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
 </div>
-<script>window.__timelines=window.__timelines||{{}};const tl=gsap.timeline({{paused:true}});window.__timelines["main"]=tl;tl.seek(0);</script>
+<script>window.__timelines=window.__timelines||{{}};const tl=gsap.timeline({{paused:true}});
+{s_js}
+window.__timelines["main"]=tl;tl.seek(0);</script>
 </body></html>"""
     open(os.path.join(hf, "index.html"), "w").write(index)
 
@@ -234,7 +305,7 @@ tl.to("#c{i}t",{{opacity:0,y:-10,filter:"blur(6px)",duration:0.2,ease:"power2.in
 .txt{{font:700 {fs}px/1.24 'EBInter',sans-serif;color:#F5F6F8;
  -webkit-text-stroke:4px rgba(10,12,16,.92);paint-order:stroke fill;
  text-shadow:0 2px 10px rgba(0,0,0,.65),0 0 3px rgba(0,0,0,.5);letter-spacing:.012em;word-spacing:.1em}}
-.ln{{display:block}}.w{{display:inline-block}}
+.ln{{display:block}}.w{{display:inline-block}}.em{{color:#FF5A36;font-weight:800}}
 </style>
 <div id="root" data-composition-id="subs" data-width="1920" data-height="1080">{scrim}{''.join(cue_html)}</div>
 <script>
@@ -285,8 +356,16 @@ def main():
     ap.add_argument("--quality", default="delivery"); ap.add_argument("--no-render", action="store_true")
     args = ap.parse_args()
     job = json.load(open(args.job)); out = os.path.abspath(args.out); os.makedirs(out, exist_ok=True)
+    slides = job.get("mode") == "slides"
+    jdir = os.path.dirname(os.path.abspath(args.job))
 
     with step("1_source"):
+      if slides:
+        sl = [p if os.path.isabs(p) else os.path.join(jdir, p) for p in job["slides"]]
+        miss = [p for p in sl if not os.path.exists(p)]
+        if miss: raise SystemExit(f"slayt bulunamadi: {miss}")
+        src = None; src_dur = 0.0
+      else:
         src = args.source or job["source"]
         if re.match(r"https?://", src):
             p = os.path.join(out, "src.mp4")
@@ -319,7 +398,7 @@ def main():
         cues = []
         for i, (tm, ln) in enumerate(zip(timing, job["lines"])):
             for j, (a, b) in enumerate(tm["chunks"]):
-                cues.append({"s": lead + a - 0.06, "e": lead + b + 0.28, "en": ln["en_chunks"][j], "line": i})
+                cues.append({"s": lead + a - 0.06, "e": lead + b + 0.28, "en": sub_chunks(ln)[j], "line": i})
         for k in range(len(cues) - 1):
             cues[k]["e"] = min(cues[k]["e"], cues[k + 1]["s"] - 0.03)
         for c in cues: c["e"] = max(c["e"], c["s"] + 0.8)
@@ -327,6 +406,16 @@ def main():
         json.dump({"segments": seg_t, "cues": cues, "total": total, "vo": timing}, open(os.path.join(out, "timing.json"), "w"), indent=1, ensure_ascii=False)
 
     with step("4_base_cut"):
+      slide_segs = None
+      if slides:
+        slide_segs = []
+        for i, ln in enumerate(job["lines"]):
+            k = ln.get("slide", i)
+            if slide_segs and slide_segs[-1][3] == k: slide_segs[-1][1] = seg_t[i + 1]
+            else: slide_segs.append([seg_t[i], seg_t[i + 1], f"assets/slide{k}.png", k])
+        slide_segs = [tuple(x[:3]) for x in slide_segs]
+        base = None
+      else:
         parts = []; prev_end = 0.0; fc = []
         for i, ln in enumerate(job["lines"]):
             L = seg_t[i + 1] - seg_t[i]
@@ -356,14 +445,18 @@ def main():
 
     with step("6_hyperframes"):
         hf = os.path.join(out, "hf"); shutil.rmtree(hf, ignore_errors=True); os.makedirs(os.path.join(hf, "assets"))
-        shutil.copy(base, os.path.join(hf, "assets/base.mp4"))
+        if slides:
+            for k, pth in enumerate(sl):
+                sh(["ffmpeg", "-v", "error", "-y", "-i", pth, "-vf", "scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080", os.path.join(hf, f"assets/slide{k}.png")])
+        else:
+            shutil.copy(base, os.path.join(hf, "assets/base.mp4"))
         slug = job.get("logo", "")
         cand = [os.path.join(ROOT, "logos", f"{slug}-white.png"), os.path.join(ROOT, "logos", f"{slug}.png")]
         if slug.endswith("-white"): cand = cand[::-1] if False else [os.path.join(ROOT, "logos", f"{slug}.png")]
         lp = next((c for c in cand if os.path.exists(c)), None)
         if not lp: raise SystemExit(f"logo yok: {slug} (logos.csv'ye bak; AI ile logo CIZME, add_logo.py ile ekle)")
         shutil.copy(lp, os.path.join(hf, "assets/logo.png"))
-        write_hf(hf, total, cues, job, args, "logo.png")
+        write_hf(hf, total, cues, job, args, "logo.png", slide_segs)
         json.dump({"$schema": "https://hyperframes.heygen.com/schema/hyperframes.json"}, open(os.path.join(hf, "hyperframes.json"), "w")) if not os.path.exists(os.path.join(hf, "hyperframes.json")) else None
         if args.no_render: return
         hfo = os.path.join(out, "hf_overlay.mp4")
@@ -377,7 +470,7 @@ def main():
             "-ar", "48000", "-movflags", "+faststart", "-t", f"{total:.3f}", final])
         for k, t in enumerate((job.get("frames") or [2.6, (cues[len(cues) // 2]["s"] + cues[len(cues) // 2]["e"]) / 2, (cues[-3]["s"] + cues[-3]["e"]) / 2 + 0.2]), 1):
             sh(["ffmpeg", "-v", "error", "-y", "-ss", f"{t:.2f}", "-i", final, "-frames:v", "1", os.path.join(out, f"frame{k}.png")])
-    rep = {"final": final, "duration": dur(final), "total_s": round(time.time() - T0, 1), "step_seconds": TIMES, "music_source": mus_src,
+    rep = {"final": final, "duration": dur(final), "total_s": round(time.time() - T0, 1), "step_seconds": TIMES, "music_source": mus_src, "mode": job.get("mode", "clip"),
            "audio": {"tts_chars": len(tts_text)}}
     json.dump(rep, open(os.path.join(out, "report.json"), "w"), indent=1)
     print(json.dumps(rep, indent=1))
