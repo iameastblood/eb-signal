@@ -15,9 +15,9 @@
  "sub_lang": "en",
  "lead": 0.6,
  "tail": 1.4,
- "comma_ms": 200,
- "period_ms": 480,
- "speed": 0.95,
+ "comma_ms": 220,
+ "period_ms": 750,
+ "speed": 0.94,
  "sub_font_px": 38,
  "lines": [
   {

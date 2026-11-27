@@ -1,4 +1,4 @@
-# EB SIGNAL · Spec v1.4 (VERSION 1.4.0)
+# EB SIGNAL · Spec v1.4 (VERSION 1.4.1)
 @eastblood_tr ortak görsel standardı. X Marabası, Manus, Orva görsel üretmeden önce bunu okur.
 Referans kod: `ebstyle.py` + `render.py`. Ölçüler mantıksal piksel (render 2x yapılıp küçültülür).
 
@@ -110,7 +110,7 @@ Görselin üstündeki yazı ile post metni aynı cümleyi **asla** tekrar etmez.
 ## 13. Video standardı (v1.4.0)
 Kural kaynağı: Notion Görsel Standart · EB SIGNAL > VİDEO STANDARDI. Uygulama: `tools/video/` (tek komut), müzik: `music/`.
 - Türkçe Cartesia seslendirme (My Turkish Voice, sonic-3.6, `language: tr`), yabancı kelimeler TTS metninde Türkçe okunuşla (Open ey ay, Liniyır), ekranda doğru yazım.
-- Virgülde kısa nefes (`<break 200ms>`, ölçülen ~0,5 sn), noktada daha uzun (`<break 480ms>`, ~0,75 sn). Her şey tek nefes olmaz.
+- Virgülde kısa nefes (`<break 220ms>`, ölçülen ~0,35 sn), noktada daha uzun (`<break 750ms>`, ~1,0 sn), hız `speed` 0.94 (Doğukan kararı t200u: Manus ritmi daha gerçekçi). Her şey tek nefes olmaz.
 - Ses ekranla senkron: her cümle kaynak videoda o anlatılanın göründüğü kesitle eşlenir.
 - **Altyazı TEK dil** (Doğukan kararı t196u/t197u, çift dil yok): küresel konuda **İngilizce**, yalnız Türkiye'yi ilgilendiren konuda **Türkçe** (job: `sub_lang`, metin `sub_chunks`; eski `en_chunks` geriye uyumlu). Kutu yok, şeffaf; ince koyu kontur + yumuşak gölge, Inter 700 ~38-41 px, max 2 satır, giriş ve çıkış animasyonlu. Parça başına **1-2 önemli kelime ember** (#FF5A36, 800 ağırlık): `*kelime*` ya da `[[kelime]]`, 3. işaret hata verir.
 - Başlık kartı ve filigran (`@eastblood_tr` alt orta) animasyonlu, filigran nazik ve her zaman okunur.
@@ -119,6 +119,7 @@ Kural kaynağı: Notion Görsel Standart · EB SIGNAL > VİDEO STANDARDI. Uygula
 
 ### 13.1 Gamma slayt videosu (yedek, v1.4.0)
 - **Öncelik her zaman gerçek görüntü:** resmi şirket videosu, model demosu, gerçek çekim. Gamma slayt videosu yalnız konunun **hiç gerçek videosu yoksa** kullanılır (ör. mühendislik yazısı, rapor, rakam haberi).
+- **Kim:** Gamma yedeği yalnız **Orva** ve X Marabası kullanır; **Manus kullanmaz** (Doğukan t200u). En fazla **haftada 1-2 slayt videosu**, Gamma kredisi idareli harcanır.
 - **Günlük alışkanlık değildir.** Slayt videosu sık gelirse takipçi sıkılır, etkileşim düşer. Kolaya kaçma: önce gerçek video ara, bulamadığını logla, sonra Gamma.
 - Üretim: Gamma `generate` (format presentation, 16:9, `cardSplit: inputTextBreaks`, `textMode: preserve`, tema `canaveral` + EB SIGNAL ek talimatı: #0A0C10 zemin, ember vurgu, kart başına tek büyük başlık/rakam, alt çeyrek boş) > `exportAs: png` (ZIP, kart başına 2400x1350 PNG) > `make_video.py` job'unda `"mode": "slides"`, `"slides": [...]`, her satırda `"slide": i`, `"title_card": false`.
 - Slayt yazısı seslendirmeyi tekrar etmez, tamamlar (rakam, anahtar kelime); ilk kart güçlü kanca. Okları `->` değil `→` yaz (Gamma düz metin basar).

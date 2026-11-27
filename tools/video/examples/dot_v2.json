@@ -5,7 +5,7 @@
   "logo": "openai",
   "genre": "tech",
   "lead": 0.5, "tail": 1.2,
-  "comma_ms": 200, "period_ms": 480, "speed": 0.95,
+  "comma_ms": 220, "period_ms": 750, "speed": 0.94,
   "sub_font_px": 41,
   "lines": [
     {"src_start": 0.0,  "tr_chunks": ["Uzun bir tatil hafta sonunda ekip izinde olsa bile", "müşteriler ürünü kullanmaya devam ediyor"],

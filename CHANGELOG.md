@@ -9,6 +9,10 @@
 Kural: her değişiklik VERSION'ı artırır. MAJOR = şablon yapısı/palet değişimi, MINOR = yeni şablon veya yeni alan, PATCH = ölçü/renk ince ayarı, logo ekleme.
 Haftada en fazla 1-2 değişiklik, Doğukan onayından sonra. Her satır: tarih, sürüm, ne değişti, neden (hangi veri).
 
+## 1.4.1 · 2026-11-27
+- PATCH: duraklama standardı Manus ritmine eşitlendi (Doğukan t200u): virgül `<break 220ms>`, nokta `<break 750ms>`, speed 0.94. Spec 13, README ve örnek job'lar (dot_v2, gamma_slides) güncellendi; araç varsayılanları zaten 220/750/0.94.
+- Gamma slayt yedeği yalnız Orva (ve X Marabası); Manus kullanmaz. Haftada en fazla 1-2 slayt videosu, yalnız gerçek video yoksa.
+
 ## 1.4.0 · 2026-11-27
 - MINOR: **Gamma slayt videosu (yedek)**: `make_video.py` `"mode": "slides"` (Gamma PNG export > HyperFrames slayt katmanı: blur+ölçek+kayma giriş/çıkış, Ken Burns, ember tarama çizgisi; geçişler cümle arası sessizlikte). Yeni alanlar `slides`, `lines[].slide`, `title_card`. Örnek `examples/gamma_slides.json`.
 - Değişen kural (Doğukan t196u/t197u): **altyazı tek dil**: küresel konu EN, yalnız Türkiye konusu TR (`sub_lang`, `sub_chunks`; `en_chunks` geriye uyumlu). Altyazıda **1-2 ember vurgu** `*kelime*` / `[[kelime]]` (800 ağırlık, noktalama yapışık), 3. işaret hata.
